@@ -49,6 +49,33 @@ require("lazy").setup({
         end
     },
     {
+        "m-demare/hlargs.nvim",
+        config = function()
+            require('hlargs').setup({
+                disable = function(_, bufnr)
+                    if vim.b.semantic_tokens then
+                        return true
+                    end
+                    local clients = vim.lsp.get_active_clients { bufnr = bufnr }
+                    for _, c in pairs(clients) do
+                        local caps = c.server_capabilities
+                        if c.name ~= "null-ls" and caps.semanticTokensProvider and caps.semanticTokensProvider.full then
+                            vim.b.semantic_tokens = true
+                            return vim.b.semantic_tokens
+                        end
+                    end
+                end,
+            })
+        end
+    },
+    "leafgarland/typescript-vim",
+    {
+        "norcalli/nvim-colorizer.lua",
+        config = function()
+            require('colorizer').setup()
+        end
+    },
+    {
         "nvim-tree/nvim-tree.lua",
         config = function()
             require("nvim-tree").setup({
@@ -153,7 +180,7 @@ require("lazy").setup({
 
             null_ls.setup({
                 sources = {
-                    null_ls.builtins.formatting.prettier,
+                    null_ls.builtins.formatting.prettierd,
                 },
             })
         end,
