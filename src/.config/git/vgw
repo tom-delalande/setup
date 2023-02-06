@@ -1,0 +1,10 @@
+[user]
+    name = Thomas Delalande
+    email = thomas.delalande@vgw.co
+
+[push]
+    autoSetupRemote = true
+
+[core]
+    excludesfile = ~/vgw/.gitignore
+

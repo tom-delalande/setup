@@ -9,7 +9,7 @@
     editor = nvim
 
 [includeIf "gitdir:~/vgw/"]
-    path = ~/vgw/.gitconfig
+    path = ./vgw
 
 [push]
     autoSetupRemote = true
