@@ -1,0 +1,13 @@
+*.log
+*.o
+*.orig
+*.rej
+*.zcompdump*
+*__pycache__
+*packer_compiled*
+*.env
+node_modules
+src/.config/zsh/plugins
+src/.local/bin/npm/package-lock.json
+src/.local/src/dwm/dwm
+src/.local/src/dwmblocks/dwmblocks

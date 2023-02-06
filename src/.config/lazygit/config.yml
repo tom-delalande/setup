@@ -1,0 +1,6 @@
+services:
+  'github-vgw': 'github:vgw.github.com'
+gui:
+    theme:
+      selectedLineBgColor:
+        - reverse
