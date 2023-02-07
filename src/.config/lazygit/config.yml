@@ -1,7 +1,7 @@
 services:
   'github-vgw': 'github:github.com'
 os:
-  editCommand: 'vim'
+  editCommand: 'nvim'
 gui:
     theme:
       selectedLineBgColor:
