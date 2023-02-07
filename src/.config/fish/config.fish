@@ -1,27 +1,18 @@
+set fish_greeting
+
 if status is-interactive
     # Commands to run in interactive sessions can go here
     fish_config theme choose "ayu Dark"
     fish_config prompt choose scales
 end
 
-function brew-install
-    echo "brew install" $argv >> $HOME/setup/scripts/1-install/1-3-install-brew-formulae.sh
-    brew install $argv
-end
-
-function brew-cask
-    echo "brew install --cask" $argv >> $HOME/setup/scripts/1-install/1-4-install-brew-casks.sh
-    brew install --cask $argv
-end
-
+set -Ux XDG_CONFIG_HOME "$HOME/.config"
 function gwc
     set repo $argv[1]
     git clone git@github-vgw:vgw-tom/$repo $VGW_DIR/$repo
     cd $VGW_DIR/$repo
     git remote add upstream git@github-vgw:vgw/$repo
 end
-
-funcsave brew-install
 
 function commit
     git add -A 

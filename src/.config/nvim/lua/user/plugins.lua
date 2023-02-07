@@ -172,7 +172,7 @@ require("lazy").setup({
 
         end
     },
-
+    "evanleck/vim-svelte",
     {
         "jose-elias-alvarez/null-ls.nvim",
         config = function()

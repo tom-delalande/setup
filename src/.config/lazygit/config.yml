@@ -1,6 +1,15 @@
 services:
-  'github-vgw': 'github:vgw.github.com'
+  'github-vgw': 'github:github.com'
+os:
+  editCommand: 'vim'
 gui:
     theme:
       selectedLineBgColor:
         - reverse
+customCommands:
+  - key: 'R'
+    command: 'git fetch upstream main && git rebase upstream/main && git push --force-with-lease'
+    context: 'localBranches'
+  - key: '<C-p>'
+    command: "git add -A && git commit --allow-empty-message -m '' && git push"
+    context: 'global'

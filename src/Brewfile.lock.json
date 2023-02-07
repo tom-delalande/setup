@@ -14,13 +14,13 @@
         "revision": "f9eded1e6784a7ab3630f8e552b8459ddc60be42"
       },
       "homebrew/cask-fonts": {
-        "revision": "af5349ae518a2dc727d9dca71140fe064775164a"
+        "revision": "ff4e24e3b1c843f6db442c63cdf40b632f91d522"
       },
       "homebrew/cask-versions": {
-        "revision": "1badfa589e00f5d72080979dbf9aa29c0318dbef"
+        "revision": "df02d9d6392ee2934cd4d48a02c59424ead4c565"
       },
       "homebrew/core": {
-        "revision": "15cc58f490ef218e460352ccd00ebf79f35b2491"
+        "revision": "eabcd8f18848d0c79489386dea8d6f93630d1923"
       },
       "homebrew/services": {
         "revision": "3f97853a2c7bc27eba94076cb08ab93d90bc2211"
@@ -35,7 +35,7 @@
         "revision": "7e44f2ea596cc4fe2e5a600732c6fa412f460888"
       },
       "supabase/tap": {
-        "revision": "e7ecacad63e6253246ea5ec0dc9344172b025a07"
+        "revision": "eff3ef18a5a39ba39c22d243a24f2807dea9935f"
       },
       "warrensbox/tap": {
         "revision": "b9242ead9e8f946bee7894277c8db29f8add3937"
@@ -1445,7 +1445,7 @@
         }
       },
       "neovim": {
-        "version": "0.8.3",
+        "version": "HEAD-e1f03c4",
         "bottle": {
           "rebuild": 0,
           "root_url": "https://ghcr.io/v2/homebrew/core",
@@ -2326,7 +2326,7 @@
         "bottle": false
       },
       "supabase/tap/supabase": {
-        "version": "1.36.6",
+        "version": "1.36.7",
         "bottle": false
       }
     },
@@ -2566,7 +2566,7 @@
       "ventura": {
         "HOMEBREW_VERSION": "3.6.20",
         "HOMEBREW_PREFIX": "/opt/homebrew",
-        "Homebrew/homebrew-core": "15cc58f490ef218e460352ccd00ebf79f35b2491",
+        "Homebrew/homebrew-core": "eabcd8f18848d0c79489386dea8d6f93630d1923",
         "CLT": "14.2.0.0.1.1668646533",
         "Xcode": "14.2",
         "macOS": "13.1"

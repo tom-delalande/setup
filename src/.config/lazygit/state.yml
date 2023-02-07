@@ -1,8 +1,7 @@
 lastupdatecheck: 0
 recentrepos:
-- /home/mable/setup
-- /home/mable/dev/msg-bot
-- /home/mable/dev/minecraft-scripting-samples
+- /Users/thomas-delalande/dev/.dotfiles
+- /Users/thomas-delalande/vgw/pok-auth0
 startuppopupversion: 5
 customcommandshistory: []
 hidecommandlog: false
