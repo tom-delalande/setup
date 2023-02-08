@@ -48,7 +48,7 @@ local lsp = function(_, bufnr)
     end, bufopts)
     vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
     vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+    vim.keymap.set("n", "gr", ":Telescope lsp_references <CR>", bufopts)
     vim.keymap.set("n", "<space>fm", function()
         vim.lsp.buf.format { async = true }
     end, bufopts)

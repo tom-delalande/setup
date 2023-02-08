@@ -16,9 +16,9 @@ require("lazy").setup({
     -- Visual
     "nvim-tree/nvim-web-devicons",
     {
-        "bluz71/vim-moonfly-colors",
+        "joshdick/onedark.vim",
         config = function()
-            vim.cmd "colorscheme moonfly"
+            vim.cmd "colorscheme onedark"
         end
     },
     {
@@ -172,6 +172,13 @@ require("lazy").setup({
 
         end
     },
+    {
+        'tzachar/cmp-tabnine',
+        build = "./install.sh",
+        dependencies = {
+            { 'hrsh7th/nvim-cmp' },
+        },
+    },
     "evanleck/vim-svelte",
     {
         "jose-elias-alvarez/null-ls.nvim",
@@ -196,6 +203,7 @@ require("lazy").setup({
     },
 
     -- Utility
+    "tpope/vim-surround",
     "nvim-lua/plenary.nvim",
     {
         "Pocco81/auto-save.nvim",
