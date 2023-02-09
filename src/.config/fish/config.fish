@@ -28,6 +28,8 @@ bind \cp 'commit'
 set -Ux EDITOR 'nvim'
 set -Ux VGW_DIR "$HOME/vgw"
 set -Ux DEV_DIR "$HOME/dev"
+set -Ux DEV_DIR "$HOME/dev"
+set -Ux SSH_AUTH_SOCK "/private/tmp/com.apple.launchd.HDuQKcWGHE/Listeners"
 
 function localw
     tmux new -ds tasks &> /dev/null
