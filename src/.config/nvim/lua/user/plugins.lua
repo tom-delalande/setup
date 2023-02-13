@@ -135,7 +135,6 @@ require("lazy").setup({
         "nvim-telescope/telescope.nvim",
         config = function()
             require('telescope').setup(telescope_options)
-            require('telescope').load_extension('projects')
         end
     },
     {
@@ -272,12 +271,6 @@ require("lazy").setup({
     },
 
     -- Utility
-    {
-        "ahmedkhalf/project.nvim",
-        config = function()
-            require("project_nvim").setup {}
-        end
-    },
     "tpope/vim-surround",
     "nvim-lua/plenary.nvim",
     {
