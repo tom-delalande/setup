@@ -15,7 +15,7 @@ lsp.configure('tsserver', {
     single_file_support = false,
 })
 
-lsp.skip_server_setup({ 'denols' })
+lsp.skip_server_setup({ 'denols', "rust_analyzer" })
 require("deno-nvim").setup({
     server = {
         on_attach = keymaps,
@@ -27,11 +27,45 @@ require("deno-nvim").setup({
     },
 })
 
+-- lspconfig.rust_analyzer.setup {
+--     on_attach = keymaps,
+--     cmd = {
+--         "rustup", "run", "stable", "rust-analyzer"
+--     },
+--     settings = {
+--         ["rust-analyzer"] = {
+--             procMacro = {
+--                 enable = false
+--             }
+--         }
+--     }
+-- }
+require("rust-tools").setup({
+    server = {
+        on_attach = keymaps,
+        settings = {
+            ["rust-analyzer"] = {
+                procMacro = {
+                    ignored = {
+                        leptos_macro = {
+                            "component",
+                            "view",
+                            "server"
+                        },
+                        ["async-trait"] = {
+                            "async_trait",
+                        }
+                    }
+                }
+            }
+        },
+    }
+})
+
 lsp.ensure_installed({
     'tsserver',
     'eslint',
     'sumneko_lua',
-    'rust_analyzer',
     'svelte',
     'tailwindcss',
     'terraformls',
