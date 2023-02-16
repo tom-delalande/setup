@@ -1,6 +1,7 @@
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", {})
 vim.keymap.set("n", "<leader>E", ":NvimTreeFindFile<CR>", {})
 vim.keymap.set("n", "<C-g>", ":LazyGit<CR>", {})
+vim.keymap.set("x", "gr", ":Gitsigns reset_hunk<CR>", {})
 
 vim.keymap.set("n", "Q", ":q<CR>", {})
 vim.keymap.set("n", "Z", ":wqa<CR>", {})

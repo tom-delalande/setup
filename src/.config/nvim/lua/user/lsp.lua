@@ -12,7 +12,7 @@ end
 lsp.configure('tsserver', {
     on_attach = formatting_disabled,
     root_dir = lspconfig.util.root_pattern("package.json"),
-    single_file_support = false,
+    single_file_support = true,
 })
 
 lsp.skip_server_setup({ 'denols', "rust_analyzer" })
