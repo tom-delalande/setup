@@ -1,17 +1,16 @@
 font:
   normal:
     family: RobotoMono Nerd Font
-  style: Regular
-  size: 16
+  size: 18
 draw_bold_text_with_bright_colors: true
 window:
-  opacity: 0.95
+  opacity: 1
 
 # Theme (Moonfly) https://github.com/bluz71/vim-moonfly-colors/blob/master/terminal_themes/alacritty.yml
 colors:
   # Default colors
   primary:
-    background:        '#080808'
+    background:        '#000000'
     foreground:        '#b2b2b2'
     bright_foreground: '#eeeeee'
 
