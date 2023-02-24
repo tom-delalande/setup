@@ -65,14 +65,14 @@ require("rust-tools").setup({
 lsp.ensure_installed({
     'tsserver',
     'eslint',
-    'sumneko_lua',
+    'lua_ls',
     'svelte',
     'tailwindcss',
     'terraformls',
     'jsonls',
 })
 
-lsp.configure('sumneko_lua', {
+lsp.configure('lua_ls', {
     settings = {
         Lua = {
             diagnostics = {
@@ -97,10 +97,10 @@ cmp_mappings['<S-Tab>'] = nil
 lsp.setup_nvim_cmp({
     mapping = cmp_mappings,
     sources = {
-        { name = "luasnip", keyword_length = 2 },
+        { name = "luasnip",  keyword_length = 2 },
         { name = "nvim_lsp", keyword_length = 1 },
         { name = "path" },
-        { name = "buffer", keyword_length = 3 },
+        { name = "buffer",   keyword_length = 3 },
     }
 })
 

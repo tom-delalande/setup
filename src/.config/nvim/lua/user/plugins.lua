@@ -52,7 +52,6 @@ local telescope_options = {
         color_devicons = true,
         set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
     },
-
     extensions_list = { "themes", "terms" },
 }
 
@@ -144,6 +143,7 @@ require("lazy").setup({
                 {
                     sections = {
                         lualine_c = {
+                            'filename',
                             'lsp_progress'
                         }
                     }
@@ -151,13 +151,12 @@ require("lazy").setup({
             )
         end,
         dependencies = {
-            { "arkav/lualine-lsp-progress" }
+            -- { "arkav/lualine-lsp-progress" }
         }
     },
     {
         "xiyaowong/nvim-transparent",
         config = function()
-
             require("transparent").setup {
                 enable = true,
             }
@@ -279,4 +278,8 @@ require("lazy").setup({
             require("auto-save").setup()
         end
     },
+}, {
+    checker = {
+        enabled = true,
+    }
 })
