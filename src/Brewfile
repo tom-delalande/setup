@@ -52,6 +52,7 @@ brew "koekeishiya/formulae/skhd"
 brew "koekeishiya/formulae/yabai", args: ["HEAD"]
 brew "stripe/stripe-cli/stripe"
 brew "supabase/tap/supabase"
+brew "wezterm"
 cask "alacritty"
 cask "browserosaurus"
 cask "discord"
