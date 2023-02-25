@@ -7,4 +7,4 @@ then
     export SSH_AUTH_SOCK=$SOCK
 fi
 
-fish
+nu
