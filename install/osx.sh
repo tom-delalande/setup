@@ -9,6 +9,7 @@ export repo_path="thomas-delalande/.dotfiles.git"
 export dotfiles_dir="$HOME/.dotfiles"
 
 dirs=(
+  ~/Library/Application\ Support/nushell/env.nu
   ~/.config
   ~/dev
   ~/vgw
@@ -24,6 +25,7 @@ symlinks=(
   .config/fish
   .config/lazygit
   .config/starship.toml
+  .config/wezterm
   .zshrc
 )
 
@@ -67,6 +69,11 @@ symlink_files() {
   done
 }
 
+symlink_nushell() {
+    ln -sfv "${dotfiles_dir}/src/nushell/config.nu" "$HOME/Library/Application\ Support/nushell/config.nu"
+    ln -sfv "${dotfiles_dir}/src/nushell/env.nu" "$HOME/Library/Application\ Support/nushell/env.nu"
+}
+
 fonts=(
   JetBrainsMono 
   RobotoMono 
@@ -93,4 +100,5 @@ install_dependencies
 clone_repo
 create_dirs
 symlink_files
+symlink_nushell
 install_nerd_fonts

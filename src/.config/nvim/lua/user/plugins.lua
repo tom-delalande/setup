@@ -278,8 +278,4 @@ require("lazy").setup({
             require("auto-save").setup()
         end
     },
-}, {
-    checker = {
-        enabled = true,
-    }
-})
+}, {})
