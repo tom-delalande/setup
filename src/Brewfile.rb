@@ -1,4 +1,4 @@
-work = ENV.has_value?("WORK")
+work = system "echo $WORK"
 
 tap "homebrew/bundle"
 tap "homebrew/cask"
@@ -44,7 +44,7 @@ brew "koekeishiya/formulae/skhd"
 brew "koekeishiya/formulae/yabai", args: ["HEAD"]
 brew "fsouza/prettierd/prettierd"
 cask "browserosaurus"
-cask "discord" unless ENV.has_value?("WORK")
+cask "discord" unless work
 cask "docker"
 cask "figma"
 cask "firefox" unless work
