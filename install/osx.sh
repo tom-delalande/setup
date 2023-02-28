@@ -10,12 +10,12 @@ export dotfiles_dir="$HOME/.dotfiles"
 
 export brewfile="Brewfile.rb"
 
-if [ $1 = "work" ]; then
+if [ "$1" == "work" ]; then
     brewfile="Brewfile_work.rb"
 fi
 
 dirs=(
-  ~/Library/Application\ Support/nushell/env.nu
+  ~/Library/Application\ Support
   ~/.config
   ~/dev
   ~/vgw
@@ -35,6 +35,9 @@ symlinks=(
   .zshrc
 )
 
+application_support_symlinks=(
+    nushell
+)
 ## End of configuration
 set -e
 
@@ -48,9 +51,7 @@ install_dependencies() {
 }
 
 clone_repo() {
-  if [ -d "$HOME/dotfiles" ]; then
-    mv "$HOME/dotfiles" "${dotfiles_dir}";
-  elif [ ! -d "${dotfiles_dir}" ]; then
+  if [ ! -d "${dotfiles_dir}" ]; then
     git clone "${repo_host}/${repo_path}" "${dotfiles_dir}"
   fi
 
@@ -67,17 +68,20 @@ create_dirs() {
 
 symlink_files() {
   for name in "${symlinks[@]}"; do
-    if [ ! -e "$name" ]; then
+    if [ ! -e "$HOME/$name" ]; then
       ln -sfv "${dotfiles_dir}/src/${name}" "$HOME/${name}"
     else
       echo "${name} already exists."
     fi
   done
-}
 
-symlink_nushell() {
-    ln -sfv "${dotfiles_dir}/src/nushell/config.nu" "$HOME/Library/Application\ Support/nushell/config.nu"
-    ln -sfv "${dotfiles_dir}/src/nushell/env.nu" "$HOME/Library/Application\ Support/nushell/env.nu"
+  for name in "${application_support_symlinks[@]}"; do
+    if [ ! -e "$HOME/Library/Application Support/${name}" ]; then
+      ln -sfv "${dotfiles_dir}/src/${name}" "$HOME/Library/Application Support/${name}"
+    else
+      echo "${name} already exists."
+    fi
+  done
 }
 
 fonts=(
@@ -102,14 +106,11 @@ update_nvim_plugins() {
     nvim --headless +Lazy update +qa
 }
 
-
-
 ## Start of the script
 install_brew
 install_dependencies
 clone_repo
 create_dirs
 symlink_files
-symlink_nushell
 install_nerd_fonts
 update_nvim_plugins

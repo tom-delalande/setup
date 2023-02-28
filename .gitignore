@@ -12,3 +12,4 @@ src/.local/bin/npm/package-lock.json
 src/.local/src/dwm/dwm
 src/.local/src/dwmblocks/dwmblocks
 src/.config/lazygit/state.yml
+src/nushell/history.txt
