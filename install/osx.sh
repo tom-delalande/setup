@@ -38,7 +38,7 @@ install_brew() {
 }
 
 install_dependencies() {
-    brew bundle --file ~/.dotfiles/src/Brewfile --cleanup
+    brew bundle --file ~/.dotfiles/src/Brewfile.rb --cleanup
 }
 
 clone_repo() {
