@@ -8,6 +8,12 @@ export repo_host="https://github.com/"
 export repo_path="thomas-delalande/.dotfiles.git"
 export dotfiles_dir="$HOME/.dotfiles"
 
+export brewfile="Brewfile.rb"
+
+if [ $1 = "work" ]; then
+    brewfile="Brewfile_work.rb"
+fi
+
 dirs=(
   ~/Library/Application\ Support/nushell/env.nu
   ~/.config
@@ -38,7 +44,7 @@ install_brew() {
 }
 
 install_dependencies() {
-    brew bundle --file ~/.dotfiles/src/Brewfile.rb --cleanup
+    brew bundle --file ~/.dotfiles/src/${brewfile} --cleanup
 }
 
 clone_repo() {
@@ -92,6 +98,10 @@ install_nerd_fonts() {
   done
 }
 
+update_nvim_plugins() {
+    nvim --headless +Lazy update +qa
+}
+
 
 
 ## Start of the script
@@ -102,3 +112,4 @@ create_dirs
 symlink_files
 symlink_nushell
 install_nerd_fonts
+update_nvim_plugins
