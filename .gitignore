@@ -13,3 +13,5 @@ src/.local/src/dwm/dwm
 src/.local/src/dwmblocks/dwmblocks
 src/.config/lazygit/state.yml
 src/nushell/history.txt
+src/result
+result
