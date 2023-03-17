@@ -90,6 +90,7 @@
                         "koekeishiya/formulae/skhd"
                         "koekeishiya/formulae/yabai"
                         "fsouza/prettierd/prettierd"
+                        "zoxide"
                       ];
                       casks = [
                         "amethyst"
@@ -98,9 +99,6 @@
                         "docker"
                         "figma"
                         "firefox"
-                        "font-hack"
-                        "font-hack-nerd-font"
-                        "font-inconsolata"
                         "google-chrome"
                         "google-drive"
                         "handbrake"
@@ -174,20 +172,22 @@
                                 };
                                 programs.wezterm = {
                                     enable = true;
+                                    extraConfig = builtins.readFile ./.config/wezterm/wezterm.lua;
                                 };
                                 programs.tmux = {
                                     enable = true;
-                                    /* extraConfig.source = builtins.readFile ./.config/tmux/tmux.conf; */
+                                    extraConfig = builtins.readFile ./.config/tmux/tmux.conf;
                                 };
                                 programs.fish = {
                                     enable = true;
+                                    shellInit = builtins.readFile ./.config/fish/config.fish;
                                 };
                                 programs.neovim = {
                                     enable = true;
                                 };
                                 programs.lazygit = {
                                     enable = true;
-                                    /* settings.source = builtins.readFile ./.config/lazygit/config.yml; */
+                                    settings = builtins.readFile ./.config/lazygit/config.yml;
                                 };
                                 home.file.".config/git" = {
                                     source = ./.config/git;
@@ -205,26 +205,6 @@
                                     source = ./.config/yabai;
                                     recursive = true;
                                 };
-                                home.file.".config/tmux" = {
-                                    source = ./.config/tmux;
-                                    recursive = true;
-                                };
-                                home.file.".config/fish" = {
-                                    source = ./.config/fish;
-                                    recursive = true;
-                                };
-                                home.file.".config/lazygit" = {
-                                    source = ./.config/lazygit;
-                                    recursive = true;
-                                };
-                                home.file.".config/wezterm" = {
-                                    source = ./.config/wezterm;
-                                    recursive = true;
-                                };
-                                /* home.file.".config/raycast" = { */
-                                /*     source = ./.config/raycast; */
-                                /*     recursive = true; */
-                                /* }; */
                                 home.file.".zshrc" = {
                                     source = ./.zshrc;
                                 };
