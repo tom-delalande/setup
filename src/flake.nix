@@ -93,33 +93,35 @@
                         "zoxide"
                       ];
                       casks = [
-                        "amethyst"
                         "browserosaurus"
-                        "discord"
                         "docker"
                         "figma"
-                        "firefox"
                         "google-chrome"
                         "google-drive"
                         "handbrake"
                         "hiddenbar"
-                        "intellij-idea-ce"
-                        "league-of-legends"
                         "maccy"
-                        "minecraft"
-                        "notion"
                         "obsidian"
                         "postman"
                         "raycast"
-                        "slack"
                         "spotify"
+                        "slack"
                         "ticktick"
                         "itsycal"
                         "vlc"
-                        "webex"
-                        "openvpn-connect"
                         "wezterm"
-                      ];
+                      ] ++ (if builtins.getEnv "WORK" == true then [
+                        "openvpn-connect"
+                        "webex"
+                        "intellij-idea"
+                      ] else [
+                        "discord"
+                        "league-of-legends"
+                        "minecraft"
+                        "notion"
+                        "intellij-idea-ce"
+                        "firefox"
+                      ]);
                     };
                 })
                 inputs.home-manager.darwinModules.home-manager {

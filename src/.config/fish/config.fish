@@ -22,13 +22,13 @@ end
 
 bind \cf 'tmux neww tms'
 bind \ck 'clear'
-bind \cq 'vim . +:CHADopen'
 bind \cg 'lazygit'
 bind \cp 'commit'
 set -Ux EDITOR 'nvim'
 set -Ux VGW_DIR "$HOME/vgw"
 set -Ux DEV_DIR "$HOME/dev"
 set -Ux DEV_DIR "$HOME/dev"
+alias vim vim
 
 function localw
     tmux new -ds tasks &> /dev/null
