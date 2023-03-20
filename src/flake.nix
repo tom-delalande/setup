@@ -110,18 +110,10 @@
                         "itsycal"
                         "vlc"
                         "wezterm"
-                      ] ++ (if builtins.getEnv "WORK" == true then [
                         "openvpn-connect"
                         "webex"
                         "intellij-idea"
-                      ] else [
-                        "discord"
-                        "league-of-legends"
-                        "minecraft"
-                        "notion"
-                        "intellij-idea-ce"
-                        "firefox"
-                      ]);
+                      ];
                     };
                 })
                 inputs.home-manager.darwinModules.home-manager {
@@ -318,18 +310,13 @@
                         "itsycal"
                         "vlc"
                         "wezterm"
-                      ] ++ (if builtins.getEnv "WORK" == true then [
-                        "openvpn-connect"
-                        "webex"
-                        "intellij-idea"
-                      ] else [
                         "discord"
                         "league-of-legends"
                         "minecraft"
                         "notion"
                         "intellij-idea-ce"
                         "firefox"
-                      ]);
+                      ];
                     };
                 })
                 inputs.home-manager.darwinModules.home-manager {
