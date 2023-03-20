@@ -157,9 +157,8 @@ require("lazy").setup({
     {
         "xiyaowong/nvim-transparent",
         config = function()
-            require("transparent").setup {
-                enable = true,
-            }
+            require("transparent").setup()
+            vim.cmd 'TransparentEnable'
         end
     },
     {
