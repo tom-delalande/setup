@@ -28,7 +28,7 @@ set -Ux EDITOR 'nvim'
 set -Ux VGW_DIR "$HOME/vgw"
 set -Ux DEV_DIR "$HOME/dev"
 set -Ux DEV_DIR "$HOME/dev"
-alias vim vim
+alias vim nvim
 
 function localw
     tmux new -ds tasks &> /dev/null
