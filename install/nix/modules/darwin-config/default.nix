@@ -17,6 +17,7 @@
     system.defaults.dock = {
         autohide = true;
         orientation = "right";
+        show-recents = false;
     };
     system.defaults.NSGlobalDomain.InitialKeyRepeat = 14;
     system.defaults.NSGlobalDomain.KeyRepeat = 1;
