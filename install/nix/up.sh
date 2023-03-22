@@ -5,7 +5,5 @@ else
     export SYSTEM=yellow-child
 fi
 
-nix build ~/.dotfiles/src\#darwinConfigurations.$SYSTEM.system
-cd ~/.dotfiles/src
-./result/sw/bin/darwin-rebuild switch --flake .
-
+nix build ~/.dotfiles/install/nix\#darwinConfigurations.$SYSTEM.system
+~/.dotfiles/src/result/sw/bin/darwin-rebuild switch --flake ./install/nix/
