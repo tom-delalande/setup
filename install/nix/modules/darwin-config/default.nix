@@ -98,6 +98,7 @@
         "notion"
         "intellij-idea-ce"
         "firefox"
+        "arc"
       ];
     };
 })
