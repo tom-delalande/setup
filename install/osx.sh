@@ -15,7 +15,6 @@ if [ "$1" == "work" ]; then
 fi
 
 dirs=(
-  ~/Library/Application\ Support
   ~/.config
   ~/dev
   ~/vgw
@@ -35,15 +34,14 @@ symlinks=(
   .zshrc
 )
 
-application_support_symlinks=(
-    nushell
-)
 ## End of configuration
 set -e
 
 install_brew() {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    brew tap Homebrew/bundle
+	if [[ $(command -v brew) == "" ]]; then
+	    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	    brew tap Homebrew/bundle
+	fi
 }
 
 install_dependencies() {
@@ -70,14 +68,6 @@ symlink_files() {
   for name in "${symlinks[@]}"; do
     if [ ! -e "$HOME/$name" ]; then
       ln -sfv "${dotfiles_dir}/src/${name}" "$HOME/${name}"
-    else
-      echo "${name} already exists."
-    fi
-  done
-
-  for name in "${application_support_symlinks[@]}"; do
-    if [ ! -e "$HOME/Library/Application Support/${name}" ]; then
-      ln -sfv "${dotfiles_dir}/src/${name}" "$HOME/Library/Application Support/${name}"
     else
       echo "${name} already exists."
     fi
