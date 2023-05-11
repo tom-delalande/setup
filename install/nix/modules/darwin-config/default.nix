@@ -68,6 +68,14 @@
         "terraform"
         "tmux"
         "wget"
+        "jq"
+        "exa"
+        "bat"
+        "fzf"
+        "rg"
+        "entr"
+        "z"
+        "vifm"
         "jesseduffield/lazygit/lazygit"
         "koekeishiya/formulae/skhd"
         "koekeishiya/formulae/yabai"
@@ -99,6 +107,7 @@
         "intellij-idea-ce"
         "firefox"
         "arc"
+        "ilok-license-manager"
       ];
     };
 })

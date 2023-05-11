@@ -29,6 +29,8 @@ set -Ux VGW_DIR "$HOME/vgw"
 set -Ux DEV_DIR "$HOME/dev"
 set -Ux DEV_DIR "$HOME/dev"
 alias vim nvim
+alias ls exa
+alias cat bat
 
 function localw
     tmux new -ds tasks &> /dev/null

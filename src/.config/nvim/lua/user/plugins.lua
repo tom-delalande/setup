@@ -83,7 +83,6 @@ require("lazy").setup({
                     "lua",
                     "rust",
                     "sql",
-                    "svelte",
                     "terraform",
                     "toml",
                     "tsx",
@@ -247,7 +246,13 @@ require("lazy").setup({
             { 'hrsh7th/nvim-cmp' },
         },
     },
-    "evanleck/vim-svelte",
+    {
+        "evanleck/vim-svelte",
+        dependencies = {
+            "othree/html5.vim",
+            "pangloss/vim-javascript"
+        }
+    },
     {
         "jose-elias-alvarez/null-ls.nvim",
         config = function()

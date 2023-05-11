@@ -28,22 +28,16 @@ require("deno-nvim").setup({
 })
 
 require("rust-tools").setup({
+    tools = {
+        hover_actions = {
+            max_width = 1,
+            max_height = 1,
+        },
+    },
     server = {
         on_attach = keymaps,
         settings = {
             ["rust-analyzer"] = {
-                procMacro = {
-                    ignored = {
-                        leptos_macro = {
-                            "component",
-                            "view",
-                            "server"
-                        },
-                        ["async-trait"] = {
-                            "async_trait",
-                        }
-                    }
-                }
             }
         },
     }
