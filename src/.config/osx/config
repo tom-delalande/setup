@@ -13,7 +13,7 @@ defaults write -g com.apple.trackpad.scaling 9.0
 defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
 # Set background to dark-grey color
-osascript -e 'tell application "Finder" to set desktop picture to POSIX file "/System/Library/Desktop Pictures/Solid Colors/Stone.png"
+osascript -e 'tell application "Finder" to set desktop picture to POSIX file "/System/Library/Desktop Pictures/Solid Colors/Stone.png"'
 
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
@@ -40,7 +40,7 @@ defaults write com.apple.dock tilesize -int 30
 defaults write com.apple.dock expose-animation-duration -float 0.15
 
 # Set dark mode
-# osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to not dark mode'
+osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to not dark mode'
 
 # Set dock to the right
 defaults write com.apple.dock orientation -string left
