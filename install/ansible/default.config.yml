@@ -18,7 +18,16 @@ dockitems_persist: []
 
 dotfiles_directory: ../../src
 dotfiles_files:
-  - .config
+  - .config/git
+  - .config/alacritty
+  - .config/nvim
+  - .config/skhd
+  - .config/yabai
+  - .config/tmux
+  - .config/fish
+  - .config/lazygit
+  - .config/starship.toml
+  - .config/wezterm
   - .zshrc
 
 homebrew_file: ../../src/Brewfile.rb

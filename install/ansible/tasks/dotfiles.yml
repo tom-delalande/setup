@@ -1,4 +1,7 @@
 ---
+  - name: Make config directory
+    command: "mkdir {{ lookup('env', 'HOME') }}/.config"
+
   - name: Link dotfiles
     command: "ln -sfv {{ dotfiles_directory }}/{{ item }} {{ lookup('env', 'HOME') }}/{{ item }}"
     loop: "{{ dotfiles_files }}"
