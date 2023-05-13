@@ -16,7 +16,7 @@ dockitems_persist: []
 #   path: "/Applications/Sublime Text.app/"
 #   pos: 5
 
-dotfiles_directory: ../../src
+dotfiles_directory: "{{ lookup('env', 'HOME') }}/.dotfiles"
 dotfiles_files:
   - .config/git
   - .config/alacritty

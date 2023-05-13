@@ -3,5 +3,5 @@
     command: "mkdir {{ lookup('env', 'HOME') }}/.config"
 
   - name: Link dotfiles
-    command: "ln -sfv {{ dotfiles_directory }}/{{ item }} {{ lookup('env', 'HOME') }}/{{ item }}"
+    command: "ln -sfv {{ dotfiles_directory }}/src/{{ item }} {{ lookup('env', 'HOME') }}/{{ item }}"
     loop: "{{ dotfiles_files }}"
