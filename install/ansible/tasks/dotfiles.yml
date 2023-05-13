@@ -1,4 +1,4 @@
 ---
   - name: Link dotfiles
     command: "ln -sfv {{ dotfiles_directory }}/{{ item }} {{ lookup('env', 'HOME') }}/{{ item }}"
-    loop: dotfiles_files
+    loop: "{{ dotfiles_files }}"
