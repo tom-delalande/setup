@@ -49,7 +49,7 @@
         repo: "{{ homebrew_repo }}"
         version: master
         dest: "{{ homebrew_install_path }}"
-        update: false
+        update: true
         depth: 1
       become: true
       become_user: "{{ homebrew_user }}"
@@ -91,7 +91,7 @@
           check_mode: false
 
         - name: Install from Brewfile.
-          command: "{{ homebrew_brew_bin_path }}/brew bundle --file={{ homebrew_file }} --cleanup --zap"
+          command: "{{ homebrew_brew_bin_path }}/brew bundle --file={{ homebrew_file }} --zap"
           when: homebrew_brewfile.stat.exists
 
       # Privilege escalation is only required for inner steps when
