@@ -1,4 +1,8 @@
 ---
+  - name: Download wallpaper
+    command: "wget -O {{ lookup('env', 'HOME') }}/Pictures/wallpaper.jpg {{ wallpaper_url }}"
+    changed_when: false
+
   - name: Run .osx dotfiles.
     command: "sh {{ osx_script }}"
     changed_when: false
