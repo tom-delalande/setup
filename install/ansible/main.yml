@@ -14,9 +14,6 @@
 
   roles:
     - role: elliotweiser.osx-command-line-tools
-    # - role: geerlingguy.mac.dock
-    #   when: configure_dock
-    #   tags: ['dock']
 
   tasks:
     - import_tasks: tasks/osx.yml
@@ -27,3 +24,5 @@
       tags: ['dotfiles']
     - import_tasks: tasks/nvim.yml
       tags: ['nvim']
+    - import_tasks: tasks/ssh.yml
+      tags: ['ssh']

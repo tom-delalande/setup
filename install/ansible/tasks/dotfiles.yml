@@ -1,6 +1,8 @@
 ---
-  - name: Make config directory
-    command: "mkdir {{ lookup('env', 'HOME') }}/.config"
+  - name: Ensure .config directory exists.
+    file:
+      dest: "{{ lookup('env', 'HOME') }}/.config"
+      state: directory
 
   - name: Link dotfiles
     command: "ln -sfv {{ dotfiles_directory }}/src/{{ item }} {{ lookup('env', 'HOME') }}/{{ item }}"

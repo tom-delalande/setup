@@ -1,21 +1,4 @@
 ---
-downloads: ~/.ansible-downloads/
-
-configure_dotfiles: true
-configure_osx: true
-
-configure_dock: true
-dockitems_remove: 
-- Launchpad
-- TV
-- Podcasts
-- 'App Store'
-
-dockitems_persist: []
-# - name: "Sublime Text"
-#   path: "/Applications/Sublime Text.app/"
-#   pos: 5
-
 dotfiles_directory: "{{ lookup('env', 'HOME') }}/.dotfiles"
 dotfiles_files:
   - .config/git
@@ -39,3 +22,12 @@ homebrew_brew_bin_path: "{{ homebrew_prefix }}/bin"
 wallpaper_url: https://r4.wallpaperflare.com/wallpaper/992/179/704/sunset-in-mars-minimal-wallpaper-c8e67de840801ce8202ca16e581244ba.jpg
 osx_script: "{{ dotfiles_directory }}/src/.config/osx/config --no-restart"
 
+dest_ssh_key: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519"
+source_ssh_key: "../../src/ssh/id_ed25519"
+
+ssh_keys_directory: ../../src/ssh/
+ssh_keys:
+  - id_ed25519
+ssh_config_files:
+  - authorized_keys
+  - config

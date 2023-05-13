@@ -1,12 +1,12 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
-SETUVAR --export DEV_DIR:/Users/Thomas\x2eDelalande/dev
+SETUVAR --export DEV_DIR:/Users/thomas\x2ddelalande/dev
 SETUVAR --export EDITOR:nvim
 SETUVAR --export IMAGE_TAG:latest
 SETUVAR --export RUST_BACKTRACE:1
 SETUVAR --export SSH_AUTH_SOCK:/private/tmp/com\x2eapple\x2elaunchd\x2eHDuQKcWGHE/Listeners
-SETUVAR --export VGW_DIR:/Users/Thomas\x2eDelalande/vgw
-SETUVAR --export XDG_CONFIG_HOME:/Users/Thomas\x2eDelalande/\x2econfig
+SETUVAR --export VGW_DIR:/Users/thomas\x2ddelalande/vgw
+SETUVAR --export XDG_CONFIG_HOME:/Users/thomas\x2ddelalande/\x2econfig
 SETUVAR --export ZK_NOTEBOOK_DIR:/Users/thomas\x2ddelalande/notes
 SETUVAR __fish_initialized:3400
 SETUVAR fish_color_autosuggestion:555\x1ebrblack
