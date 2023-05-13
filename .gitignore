@@ -17,3 +17,4 @@ src/result
 result
 src/.config/tmux/plugins
 src/.config/nvim/lazy-lock.json
+roles

@@ -14,18 +14,16 @@
 
   roles:
     - role: elliotweiser.osx-command-line-tools
-    - role: geerlingguy.mac.homebrew
-      tags: ['homebrew']
     - role: geerlingguy.mac.dock
       when: configure_dock
       tags: ['dock']
 
   tasks:
-    - name: Run post-provision task files in a block.
-      tags: ['post']
-      block:
-        - name: Run configured post-provision ansible task files.
-          include_tasks: "{{ outer_item }}"
-          loop_control:
-            loop_var: outer_item
-          with_fileglob: "{{ post_provision_tasks | default(omit) }}"
+    - import_tasks: tasks/osx.yml
+      tags: ['osx']
+    - import_tasks: tasks/homebrew.yml
+      tags: ['brew']
+    - import_tasks: tasks/dotfiles.yml
+      tags: ['dotfiles']
+    - import_tasks: tasks/nvim.yml
+      tags: ['nvim']

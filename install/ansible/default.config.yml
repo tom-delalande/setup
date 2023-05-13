@@ -4,8 +4,7 @@ downloads: ~/.ansible-downloads/
 configure_dotfiles: true
 configure_osx: true
 
-# Set to 'true' to configure the Dock via dockutil.
-configure_dock: false
+configure_dock: true
 dockitems_remove: 
 - Launchpad
 - TV
@@ -17,97 +16,16 @@ dockitems_persist: []
 #   path: "/Applications/Sublime Text.app/"
 #   pos: 5
 
-configure_sudoers: false
-sudoers_custom_config: ''
-# Example:
-# sudoers_custom_config: |
-#   # Allow users in admin group to use sudo with no password.
-#   %admin ALL=(ALL) NOPASSWD: ALL
-
-dotfiles_repo_local_destination: ~/.dotfiles/src/
+dotfiles_directory: ../../src
 dotfiles_files:
   - .config
   - .zshrc
 
-homebrew_installed_packages:
-  # - ansible # Installed via Pip.
-    - awscli
-    - docker
-    - gh
-    - fish
-    - flyway
-    - fzf
-    - git
-    - gradle
-    - openjdk@11
-    - lua
-    - luarocks
-    - maven
-    - neovim
-    - node
-    - opencv
-    - postgresql@14
-    - ripgrep
-    - sqlx-cli
-    - rustup-init
-    - trunk
-    - saml2aws
-    - starship
-    - terraform
-    - tmux
-    - wget
-    - jq
-    - exa
-    - bat
-    - fzf
-    - rg
-    - entr
-    - z
-    - vifm
-    - jesseduffield/lazygit/lazygit
-    - koekeishiya/formulae/skhd
-    - koekeishiya/formulae/yabai
-    - fsouza/prettierd/prettierd
-    - zoxide
+homebrew_file: ../../src/Brewfile.rb
+homebrew_repo: https://github.com/Homebrew/brew
+homebrew_prefix: "{{ (ansible_machine == 'arm64') | ternary('/opt/homebrew', '/usr/local') }}"
+homebrew_install_path: "{{ homebrew_prefix }}/Homebrew"
+homebrew_brew_bin_path: "{{ homebrew_prefix }}/bin"
 
-homebrew_taps:
-  - homebrew/cask
-  - homebrew/cask-versions
-  - homebrew/core
-  - homebrew/services
-  - jesseduffield/lazygit
-  - koekeishiya/formulae
-  - warrensbox/tap
-  - yulrizka/tap
-  - fsouza/prettierd
-
-homebrew_cask_appdir: /Applications
-homebrew_cask_apps:
-  - browserosaurus
-  - docker
-  - figma
-  - google-chrome
-  - google-drive
-  - handbrake
-  - hiddenbar
-  - maccy
-  - obsidian
-  - postman
-  - raycast
-  - spotify
-  - slack
-  - ticktick
-  - itsycal
-  - vlc
-  - wezterm
-  - discord
-  - league-of-legends
-  - minecraft
-  - notion
-  - intellij-idea-ce
-  - firefox
-  - arc
-  - ilok-license-manager
-
-osx_script: "~/config/osx/config --no-restart"
+osx_script: "../../src/.config/osx/config --no-restart"
 

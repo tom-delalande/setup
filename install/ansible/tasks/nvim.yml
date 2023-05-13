@@ -1,0 +1,3 @@
+---
+  - name: Update NVIM plugins
+    command: " nvim --headless +Lazy update +qa"
