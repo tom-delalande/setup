@@ -40,7 +40,7 @@ defaults write com.apple.dock tilesize -int 30
 defaults write com.apple.dock expose-animation-duration -float 0.15
 
 # Set dark mode
-osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to not dark mode'
+# osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to not dark mode'
 
 # Set dock to the right
 defaults write com.apple.dock orientation -string left
@@ -50,3 +50,4 @@ defaults write com.apple.dock autohide -bool true
 defaults write com.apple.dock "autohide-delay" -float "0.0"
 
 killall Dock
+
