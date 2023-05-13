@@ -14,9 +14,9 @@
 
   roles:
     - role: elliotweiser.osx-command-line-tools
-    - role: geerlingguy.mac.dock
-      when: configure_dock
-      tags: ['dock']
+    # - role: geerlingguy.mac.dock
+    #   when: configure_dock
+    #   tags: ['dock']
 
   tasks:
     - import_tasks: tasks/osx.yml

@@ -91,7 +91,7 @@
           check_mode: false
 
         - name: Install from Brewfile.
-          command: "{{ homebrew_brew_bin_path }}/brew bundle --file={{ homebrew_file }} --cleanup"
+          command: "{{ homebrew_brew_bin_path }}/brew bundle --file={{ homebrew_file }} --cleanup --zap"
           when: homebrew_brewfile.stat.exists
 
       # Privilege escalation is only required for inner steps when
