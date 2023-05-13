@@ -43,7 +43,10 @@ defaults write com.apple.dock expose-animation-duration -float 0.15
 osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to not dark mode'
 
 # Set dock to the right
-defaults write com.apple.dock orientation -string left
+defaults write com.apple.dock orientation -string right
+
+# Remove all dock items
+defaults write com.apple.dock persistent-apps -array
 
 # Auto-hide dock
 defaults write com.apple.dock autohide -bool true
