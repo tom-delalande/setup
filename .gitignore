@@ -19,3 +19,4 @@ result
 src/.config/tmux/plugins
 src/.config/nvim/lazy-lock.json
 roles
+.DS_Store
