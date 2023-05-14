@@ -84,7 +84,7 @@
           changed_when: false
           check_mode: false
 
-        - name: Update Brewfile.
+        - name: Update brew
           command: "{{ homebrew_brew_bin_path }}/brew update"
 
         - name: Check for Brewfile.

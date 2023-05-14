@@ -7,3 +7,6 @@
   - name: Link dotfiles
     command: "ln -sfv {{ dotfiles_directory }}/src/{{ item }} {{ lookup('env', 'HOME') }}/{{ item }}"
     loop: "{{ dotfiles_files }}"
+
+  - name: Install tmux package manager
+    command: "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm"
