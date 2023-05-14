@@ -1,8 +1,13 @@
 ---
+  - name: Check if wallpaper image is installed.
+    stat: "path={{ lookup('env', 'HOME') }}/Pictures/wallpaper.jpg"
+    register: wallpaper_image
+    check_mode: false
+
   - name: Download wallpaper
     command: "wget -O {{ lookup('env', 'HOME') }}/Pictures/wallpaper.jpg {{ wallpaper_url }}"
-    changed_when: false
+    when: not wallpaper_image.stat.exists
+    become: true
 
   - name: Run .osx dotfiles.
     command: "sh {{ osx_script }}"
-    changed_when: false
