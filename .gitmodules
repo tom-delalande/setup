@@ -1,3 +1,0 @@
-[submodule "src/.raycast/extensions/tmux-sessionizer-raycast"]
-	path = src/.raycast/extensions/tmux-sessionizer-raycast
-	url = git@github.com:thomas-delalande/tmux-sessionizer-raycast.git
