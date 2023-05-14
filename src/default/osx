@@ -52,5 +52,15 @@ defaults write com.apple.dock persistent-apps -array
 defaults write com.apple.dock autohide -bool true
 defaults write com.apple.dock "autohide-delay" -float "0.0"
 
+# Don’t automatically rearrange Spaces based on most recent use
+defaults write com.apple.dock mru-spaces -bool false
+# Don’t show recent applications in Dock
+defaults write com.apple.dock show-recents -bool false
+
+# Finder: disable window animations and Get Info animations
+defaults write com.apple.finder DisableAllAnimations -bool true
+# Speed up Mission Control animations
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
 killall Dock
 
