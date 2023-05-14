@@ -84,6 +84,10 @@
           changed_when: false
           check_mode: false
 
+        - name: Update Brewfile.
+          command: "{{ homebrew_brew_bin_path }}/brew update"
+          when: homebrew_brewfile.stat.exists
+
         - name: Check for Brewfile.
           stat:
             path: "{{ homebrew_file }}"
