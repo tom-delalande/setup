@@ -12,22 +12,18 @@ export PATH="$HOME/Library/Python/3.8/bin:"$PATH
 pip3 install ansible
 ```
 
-3. Install requirements
+3. Run Ansible
 ```sh
-ansible-galaxy install -r install/ansible/requirements.yml
-```
-
-4. Run Playbook
-
-```sh
+cd install/ansible
+ansible-galaxy install -r requirements.yml
 ansible-playbook main.yml --ask-become-pass --ask-vault-pass
-```
-or work
 
-```sh
+// Or work
 ansible-playbook main.yml --ask-become-pass --ask-vault-pass -l vgw
-```
 
+// Or specific tags
+ansible-playbook main.yml --ask-become-pass --ask-vault-pass --tags brew nvim ssh dotfiles osx
+```
 
 I don't think I should need to run this but I'm leaving it here incase
 ```
