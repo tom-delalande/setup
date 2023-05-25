@@ -101,3 +101,6 @@
       # the `homebrew_user` doesn't match the `ansible_user_id`
       become: "{{ (homebrew_user != ansible_user_id) | bool }}"
       become_user: "{{ homebrew_user }}"
+
+    - name: Run upgrade
+      command: "{{ homebrew_brew_bin_path }}/brew upgrade"
