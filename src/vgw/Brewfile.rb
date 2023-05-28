@@ -53,5 +53,6 @@ cask "openvpn-connect"
 cask "android-commandlinetools"
 cask "android-platform-tools"
 cask "wezterm"
+cask "raycast"
 # cask "google-chrome" -- Already installed
 # cask "slack" -- Already installed

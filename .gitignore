@@ -20,3 +20,5 @@ src/.config/tmux/plugins
 src/.config/nvim/lazy-lock.json
 roles
 .DS_Store
+src/default/dotfiles/config/tmux/plugins
+src/default/dotfiles/config/lazygit/state.yml
