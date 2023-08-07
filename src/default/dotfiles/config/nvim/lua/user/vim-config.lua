@@ -27,4 +27,7 @@ vim.opt.list = true
 vim.opt.clipboard = "unnamed"
 
 vim.opt.guifont = { "RobotoMono Nerd Font", "h12" }
+vim.cmd('autocmd BufNewFile,BufRead *.html set filetype=html')
+vim.cmd('autocmd BufNewFile,BufRead *.html set syntax=html')
 vim.cmd("highlight ColorColumn guibg=White")
+

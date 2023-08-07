@@ -22,3 +22,4 @@ roles
 .DS_Store
 src/default/dotfiles/config/tmux/plugins
 src/default/dotfiles/config/lazygit/state.yml
+src/default/dotfiles/config/fish/fish_variables

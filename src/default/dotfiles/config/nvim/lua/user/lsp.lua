@@ -15,7 +15,13 @@ lsp.configure('tsserver', {
     single_file_support = true,
 })
 
-lsp.skip_server_setup({ 'denols', 'rust-analyzer' })
+lsp.configure('tailwindcss', {
+    on_attach = keymaps,
+    root_dir = lspconfig.util.root_pattern("go.mod", "package.json"),
+    single_file_support = true,
+})
+
+lsp.skip_server_setup({ 'denols', 'rust-analyzer', 'kotlin_language_server' })
 require("deno-nvim").setup({
     server = {
         on_attach = keymaps,
@@ -25,6 +31,20 @@ require("deno-nvim").setup({
             lint = true,
         }
     },
+})
+
+require('lspconfig').kotlin_language_server.setup({
+    cmd = { "kotlin-language-server" },
+    filetypes = { "kotlin" },
+    on_attach = keymaps,
+    root_dir = lspconfig.util.root_pattern("settings.gradle.kts", "settings.gradle"),
+})
+
+lspconfig.templ.setup({
+    on_attach = keymaps,
+    cmd = { "templ", "lsp" },
+    filetypes = { 'templ' },
+    root_dir = lspconfig.util.root_pattern("go.mod", ".git"),
 })
 
 require("rust-tools").setup({
@@ -123,6 +143,7 @@ lsp.set_preferences({
         info = 'I'
     }
 })
+
 
 
 lsp.on_attach(keymaps)

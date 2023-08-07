@@ -89,6 +89,7 @@ require("lazy").setup({
                     "typescript",
                     "vim",
                     "yaml",
+                    "html",
                 }
             }
         end
@@ -113,6 +114,7 @@ require("lazy").setup({
             })
         end
     },
+    "fatih/vim-go",
     "leafgarland/typescript-vim",
     {
         "norcalli/nvim-colorizer.lua",

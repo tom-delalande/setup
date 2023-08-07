@@ -37,4 +37,4 @@ SETUVAR fish_pager_color_description:B3A06D\x1eyellow\x1e\x2di
 SETUVAR fish_pager_color_prefix:cyan\x1e\x2d\x2dbold\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
 SETUVAR fish_pager_color_selected_background:\x2dr
-SETUVAR fish_user_paths:/opt/homebrew/opt/openjdk/bin\x1e/Users/thomas\x2ddelalande/\x2ecargo/bin
+SETUVAR fish_user_paths:/Users/thomas\x2ddelalande/go/bin\x1e/Users/thomas\x2ddelalande/go\x1e/opt/homebrew/opt/openjdk/bin\x1e/Users/thomas\x2ddelalande/\x2ecargo/bin
