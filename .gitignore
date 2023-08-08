@@ -23,3 +23,12 @@ roles
 src/default/dotfiles/config/tmux/plugins
 src/default/dotfiles/config/lazygit/state.yml
 src/default/dotfiles/config/fish/fish_variables
+src/default/dotfiles/config/fish/fish_variables
+src/default/dotfiles/config/git/git
+src/default/dotfiles/config/lazygit/lazygit
+src/default/dotfiles/config/nvim/nvim
+src/default/dotfiles/config/nvim/nvim
+src/default/dotfiles/config/skhd/skhd
+src/default/dotfiles/config/tmux/tmux
+src/default/dotfiles/config/wezterm/wezterm
+src/default/dotfiles/config/yabai/yabai
