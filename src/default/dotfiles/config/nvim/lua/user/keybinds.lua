@@ -30,6 +30,10 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next, {})
 vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, {})
 vim.keymap.set("n", "<space>fl", ":silent %!prettier --stdin-filepath %<CR>", {})
 
+-- Debugger
+vim.keymap.set("n", "<space>db", "<cmd> DapToggleBreakpoint <CR>", {})
+vim.keymap.set("n", "<space>dr", "<cmd> DapContinue <CR>", {})
+
 local lsp = function(_, bufnr)
     -- Enable completion triggered by <c-x><c-o>
     vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")

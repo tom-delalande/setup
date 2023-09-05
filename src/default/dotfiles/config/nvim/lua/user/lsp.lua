@@ -40,13 +40,6 @@ require('lspconfig').kotlin_language_server.setup({
     root_dir = lspconfig.util.root_pattern("settings.gradle.kts", "settings.gradle"),
 })
 
-lspconfig.templ.setup({
-    on_attach = keymaps,
-    cmd = { "templ", "lsp" },
-    filetypes = { 'templ' },
-    root_dir = lspconfig.util.root_pattern("go.mod", ".git"),
-})
-
 require("rust-tools").setup({
     tools = {
         hover_actions = {
