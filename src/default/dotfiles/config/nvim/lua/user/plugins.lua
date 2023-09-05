@@ -58,10 +58,17 @@ local telescope_options = {
 require("lazy").setup({
     -- Visual
     "nvim-tree/nvim-web-devicons",
+    -- {
+    --     "joshdick/onedark.vim",
+    --     config = function()
+    --         vim.cmd "colorscheme onedark"
+    --     end
+    -- },
     {
-        "joshdick/onedark.vim",
+        "catppuccin/nvim",
+        name = "catppuccin",
         config = function()
-            vim.cmd "colorscheme onedark"
+            vim.cmd "colorscheme catppuccin"
         end
     },
     {
@@ -145,6 +152,10 @@ require("lazy").setup({
         config = function()
             require("lualine").setup(
                 {
+                    options = {
+                        component_separators = { left = '', right = '' },
+                        section_separators = { left = '', right = '' },
+                    },
                     sections = {
                         lualine_c = {
                             'filename',
