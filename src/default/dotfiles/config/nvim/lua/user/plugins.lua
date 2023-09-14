@@ -360,6 +360,12 @@ require("lazy").setup({
         end,
     },
     { "simrat39/rust-tools.nvim" },
+    {
+        "ziglang/zig.vim",
+        config = function()
+            vim.g.zig_fmt_autosave = 0
+        end
+    },
 
     "numToStr/Comment.nvim",
     "mbbill/undotree",
