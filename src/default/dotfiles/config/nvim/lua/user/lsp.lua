@@ -40,6 +40,18 @@ require('lspconfig').kotlin_language_server.setup({
     root_dir = lspconfig.util.root_pattern("settings.gradle.kts", "settings.gradle"),
 })
 
+require('lspconfig').templ.setup({
+    on_attach = keymaps,
+    flags = {
+        debounce_text_changes = 150,
+    },
+})
+vim.filetype.add({
+    extension = {
+        templ = "templ",
+    },
+})
+
 require("rust-tools").setup({
     tools = {
         hover_actions = {
