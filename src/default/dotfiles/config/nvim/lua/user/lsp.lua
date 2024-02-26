@@ -1,51 +1,40 @@
 local keymaps = require("user.keybinds").lsp
 
-local lsp = require("lsp-zero")
+local lspzero = require("lsp-zero")
 local lspconfig = require("lspconfig")
-lsp.preset("recommended")
+lspzero.preset("recommended")
 
 local formatting_disabled = function(client, bufnr)
     client.server_capabilities.documentFormattingProvider = false
     keymaps(client, bufnr)
 end
 
-lsp.configure('tsserver', {
+lspzero.configure('tsserver', {
     on_attach = formatting_disabled,
     root_dir = lspconfig.util.root_pattern("package.json"),
     single_file_support = true,
 })
 
-lsp.configure('tailwindcss', {
+lspzero.configure('tailwindcss', {
     on_attach = keymaps,
     root_dir = lspconfig.util.root_pattern("go.mod", "package.json"),
+    filetypes = { "html", "templ", "svelte" },
     single_file_support = true,
 })
 
-lsp.skip_server_setup({ 'denols', 'rust-analyzer', 'kotlin_language_server' })
-require("deno-nvim").setup({
-    server = {
-        on_attach = keymaps,
-        root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
-        init_options = {
-            enable = true,
-            lint = true,
-        }
-    },
-})
+lspzero.skip_server_setup({ 'denols', 'rust-analyzer', 'kotlin_language_server' })
 
-require('lspconfig').kotlin_language_server.setup({
+lspconfig.kotlin_language_server.setup({
     cmd = { "kotlin-language-server" },
     filetypes = { "kotlin" },
     on_attach = keymaps,
     root_dir = lspconfig.util.root_pattern("settings.gradle.kts", "settings.gradle"),
 })
 
-require('lspconfig').templ.setup({
-    on_attach = keymaps,
-    flags = {
-        debounce_text_changes = 150,
-    },
-})
+-- lspconfig.templ.setup({
+--     on_attach = keymaps,
+-- })
+
 vim.filetype.add({
     extension = {
         templ = "templ",
@@ -68,7 +57,7 @@ require("rust-tools").setup({
     }
 })
 
-lsp.ensure_installed({
+lspzero.ensure_installed({
     'tsserver',
     'eslint',
     'lua_ls',
@@ -79,9 +68,10 @@ lsp.ensure_installed({
     'rust_analyzer',
     'kotlin_language_server',
     'yamlls',
+    'templ',
 })
 
-lsp.configure('lua_ls', {
+lspzero.configure('lua_ls', {
     settings = {
         Lua = {
             diagnostics = {
@@ -91,7 +81,7 @@ lsp.configure('lua_ls', {
     }
 })
 
-lsp.configure('yamlls', {
+lspzero.configure('yamlls', {
     on_attach = formatting_disabled,
     settings = {
         yaml = {
@@ -117,7 +107,7 @@ lsp.configure('yamlls', {
 
 local cmp = require('cmp')
 local cmp_select = { behavior = cmp.SelectBehavior.Select }
-local cmp_mappings = lsp.defaults.cmp_mappings({
+local cmp_mappings = lspzero.defaults.cmp_mappings({
     ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
     ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
     ['<C-y>'] = cmp.mapping.confirm({ select = true }),
@@ -127,7 +117,7 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
 cmp_mappings['<Tab>'] = nil
 cmp_mappings['<S-Tab>'] = nil
 
-lsp.setup_nvim_cmp({
+lspzero.setup_nvim_cmp({
     mapping = cmp_mappings,
     sources = {
         { name = "luasnip",  keyword_length = 2 },
@@ -139,7 +129,7 @@ lsp.setup_nvim_cmp({
 
 
 
-lsp.set_preferences({
+lspzero.set_preferences({
     suggest_lsp_servers = true,
     sign_icons = {
         error = 'E',
@@ -149,10 +139,14 @@ lsp.set_preferences({
     }
 })
 
+lspzero.on_attach(keymaps)
+lspzero.setup()
 
-
-lsp.on_attach(keymaps)
-lsp.setup()
+require("flutter-tools").setup {
+    lsp = {
+        on_attach = keymaps,
+    }
+}
 
 vim.diagnostic.config({
     virtual_text = true

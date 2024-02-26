@@ -29,7 +29,6 @@ set -Ux VGW_DIR "$HOME/vgw"
 set -Ux DEV_DIR "$HOME/dev"
 set -Ux DEV_DIR "$HOME/dev"
 alias vim nvim
-alias ls exa
 alias cat bat
 
 function localw
@@ -71,3 +70,4 @@ end
 tmux new-session -A -s main
 clear
 starship init fish | source
+zoxide init --cmd cd fish | source

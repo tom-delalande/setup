@@ -84,10 +84,23 @@ require("lazy").setup({
     },
     {
         "nvim-treesitter/nvim-treesitter",
+        build = function(_)
+            vim.cmd("TSUpdate")
+        end,
         config = function()
+            local config = require("nvim-treesitter.parsers").get_parser_configs()
+            config.templ = {
+                install_info = {
+                    url = "https://github.com/vrischmann/tree-sitter-templ.git",
+                    files = { "src/parser.c", "src/scanner.c" },
+                    branch = "master",
+                },
+            }
+            vim.treesitter.language.register('templ', 'templ')
             require("nvim-treesitter.configs").setup {
                 highlight = {
-                    enable = true
+                    enable = true,
+                    additional_vim_regex_highlighting = false,
                 },
                 ensure_installed = {
                     "bash",
@@ -112,6 +125,7 @@ require("lazy").setup({
             }
         end
     },
+    { "vrischmann/tree-sitter-templ" },
     {
         "m-demare/hlargs.nvim",
         config = function()
@@ -133,8 +147,18 @@ require("lazy").setup({
         end
     },
     "fatih/vim-go",
-    { "joerdav/templ.vim" },
     "leafgarland/typescript-vim",
+    {
+        "https://github.com/apple/pkl-neovim",
+        lazy = true,
+        event = "BufReadPre *.pkl",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+        },
+        build = function()
+            vim.cmd("TSInstall! pkl")
+        end,
+    },
     {
         "norcalli/nvim-colorizer.lua",
         config = function()
@@ -335,13 +359,6 @@ require("lazy").setup({
         end
     },
     {
-        'tzachar/cmp-tabnine',
-        build = "./install.sh",
-        dependencies = {
-            { 'hrsh7th/nvim-cmp' },
-        },
-    },
-    {
         "evanleck/vim-svelte",
         dependencies = {
             "othree/html5.vim",
@@ -366,6 +383,15 @@ require("lazy").setup({
         config = function()
             vim.g.zig_fmt_autosave = 0
         end
+    },
+    {
+        'akinsho/flutter-tools.nvim',
+        lazy = false,
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            'stevearc/dressing.nvim', -- optional for vim.ui.select
+        },
+        config = true,
     },
 
     "numToStr/Comment.nvim",
