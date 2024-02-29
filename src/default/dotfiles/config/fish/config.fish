@@ -69,5 +69,5 @@ end
 
 tmux new-session -A -s main
 clear
-starship init fish | source
 zoxide init --cmd cd fish | source
+starship init fish | source

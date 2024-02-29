@@ -34,7 +34,6 @@ brew "jesseduffield/lazygit/lazygit"
 brew "fsouza/prettierd/prettierd"
 brew "koekeishiya/formulae/skhd"
 brew "koekeishiya/formulae/yabai", args: ["HEAD"]
-cask "amethyst"
 cask "docker"
 cask "figma"
 cask "font-hack"

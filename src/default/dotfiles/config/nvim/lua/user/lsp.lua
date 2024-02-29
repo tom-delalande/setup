@@ -25,20 +25,10 @@ lspzero.configure('tailwindcss', {
 lspzero.skip_server_setup({ 'denols', 'rust-analyzer', 'kotlin_language_server' })
 
 lspconfig.kotlin_language_server.setup({
-    cmd = { "kotlin-language-server" },
-    filetypes = { "kotlin" },
+    -- cmd = { "kotlin-language-server" },
+    -- filetypes = { "kotlin" },
     on_attach = keymaps,
-    root_dir = lspconfig.util.root_pattern("settings.gradle.kts", "settings.gradle"),
-})
-
--- lspconfig.templ.setup({
---     on_attach = keymaps,
--- })
-
-vim.filetype.add({
-    extension = {
-        templ = "templ",
-    },
+    -- root_dir = lspconfig.util.root_pattern("build.gradle.kts", "settings.gradle"),
 })
 
 require("rust-tools").setup({
@@ -68,7 +58,6 @@ lspzero.ensure_installed({
     'rust_analyzer',
     'kotlin_language_server',
     'yamlls',
-    'templ',
 })
 
 lspzero.configure('lua_ls', {
