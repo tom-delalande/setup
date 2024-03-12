@@ -192,12 +192,15 @@ require("lazy").setup({
             cmp.setup({
                 sources = {
                     { name = 'nvim_lsp' },
+                    { name = 'nvim_lua' },
+                    { name = 'buffer' },
+                    { name = 'path' },
                 },
                 mapping = cmp.mapping.preset.insert({
                     ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
                     ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
                     ['<CR>'] = cmp.mapping.confirm({ select = true }),
-                    ["<C-Space>"] = cmp.mapping.complete(),
+                    ["<C-Space>"] = cmp.mapping.complete(), // Must remove ^Space from MacOS Keyboard shortcuts
                 }),
                 snippet = {
                     expand = function(args)
@@ -205,13 +208,14 @@ require("lazy").setup({
                     end,
                 },
             })
-        end
+        end,
+        dependencies = {
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-nvim-lua',
+        },
     },
-    { 'hrsh7th/cmp-nvim-lsp' },
-    { 'hrsh7th/cmp-buffer' },
-    { 'hrsh7th/cmp-path' },
-    { 'saadparwaiz1/cmp_luasnip' },
-    { 'hrsh7th/cmp-nvim-lua' },
     { 'L3MON4D3/LuaSnip' },
     "leafgarland/typescript-vim",
     {

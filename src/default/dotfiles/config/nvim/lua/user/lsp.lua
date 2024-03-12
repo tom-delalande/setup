@@ -28,7 +28,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 local lsp = require("lspconfig")
 
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
 lsp.tsserver.setup({
+    capabilities = capabilities,
     on_attach = function()
         vim.keymap.set("n", "<space>fm", function()
             local cursor = vim.api.nvim_win_get_cursor(0)
@@ -37,17 +40,29 @@ lsp.tsserver.setup({
         end, {})
     end
 })
-lsp.kotlin_language_server.setup({})
-lsp.terraformls.setup({})
-lsp.jsonls.setup({})
-lsp.rust_analyzer.setup({})
-lsp.eslint.setup({})
+lsp.kotlin_language_server.setup({
+    capabilities = capabilities,
+})
+lsp.terraformls.setup({
+    capabilities = capabilities,
+})
+lsp.jsonls.setup({
+    capabilities = capabilities,
+})
+lsp.rust_analyzer.setup({
+    capabilities = capabilities,
+})
+lsp.eslint.setup({
+    capabilities = capabilities,
+})
 lsp.tailwindcss.setup({
+    capabilities = capabilities,
     root_dir = lsp.util.root_pattern("go.mod", "package.json"),
     filetypes = { "html", "templ", "svelte" },
     single_file_support = true,
 })
 lsp.lua_ls.setup({
+    capabilities = capabilities,
     settings = {
         Lua = {
             diagnostics = {
@@ -57,6 +72,7 @@ lsp.lua_ls.setup({
     }
 })
 lsp.yamlls.setup({
+    capabilities = capabilities,
     settings = {
         yaml = {
             schemas = {
