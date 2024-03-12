@@ -12,6 +12,12 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+    {
+        "nvim-lualine/lualine.nvim",
+        config = function()
+            require("lualine").setup({})
+        end
+    },
     "sindrets/diffview.nvim",
     {
         "nvim-tree/nvim-tree.lua",
