@@ -20,7 +20,7 @@ homebrew_prefix: "{{ (ansible_machine == 'arm64') | ternary('/opt/homebrew', '/u
 homebrew_install_path: "{{ homebrew_prefix }}/Homebrew"
 homebrew_brew_bin_path: "{{ homebrew_prefix }}/bin"
 
-wallpaper_url: https://r4.wallpaperflare.com/wallpaper/992/179/704/sunset-in-mars-minimal-wallpaper-c8e67de840801ce8202ca16e581244ba.jpg
+wallpaper_url: https://media.idownloadblog.com/wp-content/uploads/2021/06/macOS-Monterey-wallpaper-Dark.jpg
 osx_script: "{{ src_directory }}/osx --no-restart"
 
 ssh_keys_directory: "{{ src_directory }}/ssh"

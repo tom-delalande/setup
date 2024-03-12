@@ -1,66 +1,53 @@
-local keymaps = require("user.keybinds").lsp
+vim.keymap.set("n", "<space>fd", vim.diagnostic.open_float, {})
 
-local lspzero = require("lsp-zero")
-local lspconfig = require("lspconfig")
-lspzero.preset("recommended")
+vim.api.nvim_create_autocmd('LspAttach', {
+    desc = 'LSP actions',
+    callback = function(event)
+        local opts = { buffer = event.buf }
 
-local formatting_disabled = function(client, bufnr)
-    client.server_capabilities.documentFormattingProvider = false
-    keymaps(client, bufnr)
-end
+        vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+        vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+        vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, opts)
+        vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
+        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
 
-lspzero.configure('tsserver', {
-    on_attach = formatting_disabled,
-    root_dir = lspconfig.util.root_pattern("package.json"),
-    single_file_support = true,
+        local client = vim.lsp.get_client_by_id(event.data.client_id)
+        if client.name ~= 'tsserver' and client.name ~= 'eslint' and client.name ~= 'tailwindcss' then
+            vim.keymap.set("n", "<space>fm", function()
+                vim.lsp.buf.format { async = true }
+            end, opts)
+        end
+        vim.keymap.set("n", "<space>rn", function()
+            vim.lsp.buf.rename()
+        end, opts)
+    end
 })
 
-lspzero.configure('tailwindcss', {
-    on_attach = keymaps,
-    root_dir = lspconfig.util.root_pattern("go.mod", "package.json"),
+local lsp = require("lspconfig")
+
+lsp.tsserver.setup({
+    on_attach = function()
+        vim.keymap.set("n", "<space>fm", function()
+            local cursor = vim.api.nvim_win_get_cursor(0)
+            vim.cmd("silent %!prettier --stdin-filepath %")
+            vim.api.nvim_win_set_cursor(0, cursor)
+        end, {})
+    end
+})
+lsp.kotlin_language_server.setup({})
+lsp.terraformls.setup({})
+lsp.jsonls.setup({})
+lsp.rust_analyzer.setup({})
+lsp.eslint.setup({})
+lsp.tailwindcss.setup({
+    root_dir = lsp.util.root_pattern("go.mod", "package.json"),
     filetypes = { "html", "templ", "svelte" },
     single_file_support = true,
 })
-
-lspzero.skip_server_setup({ 'denols', 'rust-analyzer', 'kotlin_language_server' })
-
-lspconfig.kotlin_language_server.setup({
-    -- cmd = { "kotlin-language-server" },
-    -- filetypes = { "kotlin" },
-    on_attach = keymaps,
-    -- root_dir = lspconfig.util.root_pattern("build.gradle.kts", "settings.gradle"),
-})
-
-require("rust-tools").setup({
-    tools = {
-        hover_actions = {
-            max_width = 1,
-            max_height = 1,
-        },
-    },
-    server = {
-        on_attach = keymaps,
-        settings = {
-            ["rust-analyzer"] = {
-            }
-        },
-    }
-})
-
-lspzero.ensure_installed({
-    'tsserver',
-    'eslint',
-    'lua_ls',
-    'svelte',
-    'tailwindcss',
-    'terraformls',
-    'jsonls',
-    'rust_analyzer',
-    'kotlin_language_server',
-    'yamlls',
-})
-
-lspzero.configure('lua_ls', {
+lsp.lua_ls.setup({
     settings = {
         Lua = {
             diagnostics = {
@@ -69,9 +56,7 @@ lspzero.configure('lua_ls', {
         }
     }
 })
-
-lspzero.configure('yamlls', {
-    on_attach = formatting_disabled,
+lsp.yamlls.setup({
     settings = {
         yaml = {
             schemas = {
@@ -85,58 +70,14 @@ lspzero.configure('yamlls', {
                 ["http://json.schemastore.org/chart"] = "Chart.{yml,yaml}",
                 ["https://json.schemastore.org/dependabot-v2"] = ".github/dependabot.{yml,yaml}",
                 ["https://json.schemastore.org/gitlab-ci"] = "*gitlab-ci*.{yml,yaml}",
-                ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] = "*api*.{yml,yaml}",
-                ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "*docker-compose*.{yml,yaml}",
-                ["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] = "*flow*.{yml,yaml}",
+                ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] =
+                "*api*.{yml,yaml}",
+                ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] =
+                "*docker-compose*.{yml,yaml}",
+                ["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] =
+                "*flow*.{yml,yaml}",
                 ["http://json.schemastore.org/circleciconfig.json"] = ".circleci/*",
             }
         }
     }
-})
-
-local cmp = require('cmp')
-local cmp_select = { behavior = cmp.SelectBehavior.Select }
-local cmp_mappings = lspzero.defaults.cmp_mappings({
-    ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-    ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-    ["<C-Space>"] = cmp.mapping.complete(),
-})
-
-cmp_mappings['<Tab>'] = nil
-cmp_mappings['<S-Tab>'] = nil
-
-lspzero.setup_nvim_cmp({
-    mapping = cmp_mappings,
-    sources = {
-        { name = "luasnip",  keyword_length = 2 },
-        { name = "nvim_lsp", keyword_length = 1 },
-        { name = "path" },
-        { name = "buffer",   keyword_length = 3 },
-    }
-})
-
-
-
-lspzero.set_preferences({
-    suggest_lsp_servers = true,
-    sign_icons = {
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
-    }
-})
-
-lspzero.on_attach(keymaps)
-lspzero.setup()
-
-require("flutter-tools").setup {
-    lsp = {
-        on_attach = keymaps,
-    }
-}
-
-vim.diagnostic.config({
-    virtual_text = true
 })
