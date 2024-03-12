@@ -190,6 +190,7 @@ require("lazy").setup({
             local cmp = require('cmp')
             local cmp_select = { behavior = cmp.SelectBehavior.Select }
             cmp.setup({
+                preselect = cmp.PreselectMode.None,
                 sources = {
                     { name = 'nvim_lsp' },
                     { name = 'nvim_lua' },
@@ -199,8 +200,8 @@ require("lazy").setup({
                 mapping = cmp.mapping.preset.insert({
                     ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
                     ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-                    ["<C-Space>"] = cmp.mapping.complete(), // Must remove ^Space from MacOS Keyboard shortcuts
+                    ['<CR>'] = cmp.mapping.confirm({ select = false }),
+                    ["<C-Space>"] = cmp.mapping.complete(), -- Must remove C-Space from MacOS Keyboard shortcuts
                 }),
                 snippet = {
                     expand = function(args)
