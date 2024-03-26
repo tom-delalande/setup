@@ -8,11 +8,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
         vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+        vim.keymap.set("n", "gi", ":Telescope lsp_implementation", opts)
         vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-        vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, opts)
+        vim.keymap.set("n", "<space>D", ":Telescope lsp_type_definitions", opts)
         vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+        vim.keymap.set("n", "gr", ":Telescope lsp_references <CR>", opts)
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if client.name ~= 'tsserver' and client.name ~= 'eslint' and client.name ~= 'tailwindcss' then
