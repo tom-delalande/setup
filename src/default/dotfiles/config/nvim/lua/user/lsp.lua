@@ -13,9 +13,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set("n", "<space>D", ":Telescope lsp_type_definitions", opts)
         vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
         vim.keymap.set("n", "gr", ":Telescope lsp_references <CR>", opts)
+        vim.keymap.set("n", "<space>ll", ":LspRestart <CR>", opts)
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
-        if client.name ~= 'tsserver' and client.name ~= 'eslint' and client.name ~= 'tailwindcss' then
+        if client.name ~= 'tsserver' and client.name ~= 'eslint' and client.name ~= 'tailwindcss' and client.name ~= 'sourcekit' then
             vim.keymap.set("n", "<space>fm", function()
                 vim.lsp.buf.format { async = true }
             end, opts)
@@ -35,10 +36,16 @@ lsp.tsserver.setup({
     on_attach = function()
         vim.keymap.set("n", "<space>fm", function()
             local cursor = vim.api.nvim_win_get_cursor(0)
-            vim.cmd("silent %!prettier --stdin-filepath %")
+            vim.cmd("silent !prettier --write %")
             vim.api.nvim_win_set_cursor(0, cursor)
         end, {})
     end
+})
+lsp.zls.setup({
+    capabilities = capabilities,
+})
+lsp.gleam.setup({
+    capabilities = capabilities,
 })
 lsp.kotlin_language_server.setup({
     capabilities = capabilities,
@@ -51,6 +58,31 @@ lsp.jsonls.setup({
 })
 lsp.rust_analyzer.setup({
     capabilities = capabilities,
+})
+lsp.crystalline.setup({
+    capabilities = capabilities,
+})
+lsp.nim_langserver.setup({
+    capabilities = capabilities,
+})
+lsp.dartls.setup({
+    capabilities = capabilities,
+})
+lsp.julials.setup({
+    capabilities = capabilities,
+})
+lsp.elmls.setup({
+    capabilities = capabilities,
+})
+
+lsp.sourcekit.setup({
+    capabilities = capabilities,
+    cmd = { "xcrun", "--toolchain", "swift", "sourcekit-lsp" },
+    on_attach = function()
+        vim.keymap.set("n", "<space>fm", function()
+            vim.cmd("silent !swift-format -i %")
+        end, {})
+    end
 })
 lsp.eslint.setup({
     capabilities = capabilities,

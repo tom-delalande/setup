@@ -4,6 +4,7 @@
 [alias]
 	fix = git commit --amend --no-edit
 	st = git status
+    ro = !git fetch origin && git rebase origin
 
 [core]
     editor = nvim
