@@ -15,7 +15,11 @@ require("lazy").setup({
     {
         "nvim-lualine/lualine.nvim",
         config = function()
-            require("lualine").setup({})
+            require("lualine").setup({
+                options = {
+                    theme = "catppuccin"
+                }
+            })
         end
     },
     "sindrets/diffview.nvim",
@@ -39,11 +43,15 @@ require("lazy").setup({
     {
         "catppuccin/nvim",
         name = "catppuccin",
+        priority = 1000,
         config = function()
-            vim.cmd "colorscheme catppuccin"
+            require("catppuccin").setup({
+                flavour = "mocha",
+                
+            })
+            vim.cmd.colorscheme "catppuccin"
         end
     },
-    "xiyaowong/transparent.nvim",
     {
         "nvim-treesitter/nvim-treesitter",
         build = function(_)
