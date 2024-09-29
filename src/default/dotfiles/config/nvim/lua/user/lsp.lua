@@ -16,7 +16,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set("n", "<space>ll", ":LspRestart <CR>", opts)
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
-        if client.name ~= 'tsserver' and client.name ~= 'eslint' and client.name ~= 'tailwindcss' and client.name ~= 'sourcekit' then
+        if client.name ~= 'ts_ls' and client.name ~= 'eslint' and client.name ~= 'tailwindcss' and client.name ~= 'sourcekit' then
             vim.keymap.set("n", "<space>fm", function()
                 vim.lsp.buf.format { async = true }
             end, opts)
@@ -31,7 +31,7 @@ local lsp = require("lspconfig")
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-lsp.tsserver.setup({
+lsp.ts_ls.setup({
     capabilities = capabilities,
     on_attach = function()
         vim.keymap.set("n", "<space>fm", function()
@@ -72,6 +72,9 @@ lsp.julials.setup({
     capabilities = capabilities,
 })
 lsp.elmls.setup({
+    capabilities = capabilities,
+})
+lsp.metals.setup({
     capabilities = capabilities,
 })
 
