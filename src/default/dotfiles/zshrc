@@ -29,6 +29,4 @@ fi
 
 fish
 
-
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
