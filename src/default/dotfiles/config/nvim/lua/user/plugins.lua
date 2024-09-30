@@ -17,12 +17,12 @@ require("lazy").setup({
         config = function()
             require("lualine").setup({
                 options = {
-                    theme = "catppuccin"
+                    theme = "catppuccin",
+                    section_separators = { left = '', right = '' },
                 }
             })
         end
     },
-    "sindrets/diffview.nvim",
     {
         "nvim-tree/nvim-tree.lua",
         dependencies = {
@@ -47,7 +47,7 @@ require("lazy").setup({
         config = function()
             require("catppuccin").setup({
                 flavour = "mocha",
-                
+
             })
             vim.cmd.colorscheme "catppuccin"
         end
@@ -107,29 +107,10 @@ require("lazy").setup({
         end
     },
     {
-        "https://github.com/apple/pkl-neovim",
-        lazy = true,
-        event = "BufReadPre *.pkl",
-        dependencies = {
-            "nvim-treesitter/nvim-treesitter",
-        },
-        build = function()
-            vim.cmd("TSInstall! pkl")
-        end,
-    },
-    {
         "norcalli/nvim-colorizer.lua",
         config = function()
             require('colorizer').setup()
         end
-    },
-    {
-        "junegunn/fzf.vim",
-        dependencies = {
-            "junegunn/fzf",
-            name = "fzf",
-            build = "./install --all",
-        }
     },
     {
         'nvim-telescope/telescope.nvim',
@@ -145,20 +126,9 @@ require("lazy").setup({
         "mfussenegger/nvim-dap",
     },
 
-    "f-person/git-blame.nvim",
+    { "f-person/git-blame.nvim" },
     "kdheepak/lazygit.nvim",
     "tpope/vim-commentary",
-    {
-        "ldelossa/gh.nvim",
-        dependencies = {
-            "ldelossa/litee.nvim",
-        },
-        config = function()
-            require('litee.lib').setup()
-            require('litee.gh').setup()
-        end
-    },
-
     {
         "folke/trouble.nvim",
         config = function()
@@ -239,6 +209,16 @@ require("lazy").setup({
         }
     },
     { "simrat39/rust-tools.nvim" },
+    {
+        "akinsho/flutter-tools.nvim",
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            'stevearc/dressing.nvim',
+        },
+        config = function()
+            require("flutter-tools").setup {}
+        end
+    },
     {
         "ziglang/zig.vim",
         config = function()

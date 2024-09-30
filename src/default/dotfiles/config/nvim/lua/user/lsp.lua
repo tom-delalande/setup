@@ -31,6 +31,19 @@ local lsp = require("lspconfig")
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
+local servers = {
+    'zls',
+    'gleam',
+    'kotlin_language_server',
+    'terraformls',
+    'jsonls',
+    'rust_analyzer',
+    'nim_langserver',
+    -- 'dartls', configured using flutter-tools
+    'metals',
+    'eslint',
+}
+
 lsp.ts_ls.setup({
     capabilities = capabilities,
     on_attach = function()
@@ -41,42 +54,13 @@ lsp.ts_ls.setup({
         end, {})
     end
 })
-lsp.zls.setup({
-    capabilities = capabilities,
-})
-lsp.gleam.setup({
-    capabilities = capabilities,
-})
-lsp.kotlin_language_server.setup({
-    capabilities = capabilities,
-})
-lsp.terraformls.setup({
-    capabilities = capabilities,
-})
-lsp.jsonls.setup({
-    capabilities = capabilities,
-})
-lsp.rust_analyzer.setup({
-    capabilities = capabilities,
-})
-lsp.crystalline.setup({
-    capabilities = capabilities,
-})
-lsp.nim_langserver.setup({
-    capabilities = capabilities,
-})
-lsp.dartls.setup({
-    capabilities = capabilities,
-})
-lsp.julials.setup({
-    capabilities = capabilities,
-})
-lsp.elmls.setup({
-    capabilities = capabilities,
-})
-lsp.metals.setup({
-    capabilities = capabilities,
-})
+
+
+for _, server in ipairs(servers) do
+    lsp[server].setup({
+        capabilities = capabilities,
+    })
+end
 
 lsp.sourcekit.setup({
     capabilities = capabilities,
@@ -87,15 +71,13 @@ lsp.sourcekit.setup({
         end, {})
     end
 })
-lsp.eslint.setup({
-    capabilities = capabilities,
-})
 lsp.tailwindcss.setup({
     capabilities = capabilities,
     root_dir = lsp.util.root_pattern("go.mod", "package.json"),
     filetypes = { "html", "templ", "svelte" },
     single_file_support = true,
 })
+
 lsp.lua_ls.setup({
     capabilities = capabilities,
     settings = {
@@ -106,6 +88,7 @@ lsp.lua_ls.setup({
         }
     }
 })
+
 lsp.yamlls.setup({
     capabilities = capabilities,
     settings = {
