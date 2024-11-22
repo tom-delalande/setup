@@ -124,6 +124,13 @@ require("lazy").setup({
     },
     {
         "mfussenegger/nvim-dap",
+        dependencies = {
+            "rcarriga/nvim-dap-ui",
+            "theHamsta/nvim-dap-virtual-text",
+            "nvim-neotest/nvim-nio",
+        },
+        config = function()
+        end
     },
 
     { "f-person/git-blame.nvim" },

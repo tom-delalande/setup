@@ -42,6 +42,7 @@ local servers = {
     -- 'dartls', configured using flutter-tools
     'metals',
     'eslint',
+    'templ',
 }
 
 lsp.ts_ls.setup({
@@ -84,6 +85,11 @@ lsp.lua_ls.setup({
         Lua = {
             diagnostics = {
                 globals = { 'vim' }
+            },
+            workspace = {
+                library = {
+                    "${3rd}/love2d/library"
+                }
             }
         }
     }
