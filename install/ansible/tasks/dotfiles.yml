@@ -7,13 +7,3 @@
   - name: Link dotfiles
     command: "ln -sfv {{ dotfiles_directory }}/{{ item }} {{ lookup('env', 'HOME') }}/.{{ item }}"
     loop: "{{ dotfiles_files }}"
-
-  - name: Check if TPM is installed.
-    stat: "path={{ lookup('env', 'HOME') }}/.tmux/plugins/tpm"
-    register: tpm
-    check_mode: false
-
-  - name: Install tmux package manager
-    command: "git clone https://github.com/tmux-plugins/tpm {{ lookup('env', 'HOME') }}/.tmux/plugins/tpm"
-    when: not tpm.stat.exists
-    become: true

@@ -36,13 +36,21 @@ yabai -m config mouse_modifier               fn
 yabai -m config mouse_action1                move
 yabai -m config mouse_action2                resize
 yabai -m config mouse_drop_action            swap
+yabai -m config window_animation_duration    0.0
 
 # general space settings
 yabai -m config layout                       bsp
-yabai -m config top_padding                  12
-yabai -m config bottom_padding               12
-yabai -m config left_padding                 12
-yabai -m config right_padding                12
-yabai -m config window_gap                   06
-yabai -m rule --add app="^(REAPER|Reaper|reaper|x86_64|Browserosaurus|CleanShot X)\$" manage=off
+yabai -m config top_padding                  0
+yabai -m config bottom_padding               0
+yabai -m config left_padding                 0
+yabai -m config right_padding                0
+yabai -m config window_gap                   0
 
+yabai -m rule --add app="CleanShot X" manage=off mouse_follows_focus=off
+yabai -m rule --add app="Reaper" manage=off mouse_follows_focus=off
+
+yabai -m rule --add app="WezTerm" space=^1
+yabai -m rule --add app="Arc" space=^2
+yabai -m rule --add app="IntelliJ Idea CE" space=^3
+yabai -m rule --add app="RustRover" space=^5
+yabai -m rule --add app="Obsidian" space=^5

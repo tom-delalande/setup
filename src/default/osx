@@ -13,10 +13,10 @@ defaults write -g com.apple.trackpad.scaling 9.0
 defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
 # Set background to dark-grey color
-osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/Pictures/wallpaper.jpg"'
+# osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/Pictures/wallpaper.jpg"'
 
 # Disable auto-correct
-defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+# defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
 # Save screenshots to Downloads folder.
 defaults write com.apple.screencapture location -string "${HOME}/Downloads"

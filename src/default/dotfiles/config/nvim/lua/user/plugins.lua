@@ -232,7 +232,6 @@ require("lazy").setup({
             vim.g.zig_fmt_autosave = 0
         end
     },
-    "vim-crystal/vim-crystal",
     "mbbill/undotree",
     "tpope/vim-surround",
     {

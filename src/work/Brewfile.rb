@@ -1,3 +1,4 @@
+brew "ansible"
 brew "awscli"
 brew "cmake"
 brew "fish"
