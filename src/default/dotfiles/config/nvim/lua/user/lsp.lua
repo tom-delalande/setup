@@ -33,14 +33,11 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 local servers = {
     'zls',
-    'gleam',
     'kotlin_language_server',
     'terraformls',
     'jsonls',
     'rust_analyzer',
     'nim_langserver',
-    -- 'dartls', configured using flutter-tools
-    'metals',
     'eslint',
     'templ',
 }
@@ -51,6 +48,7 @@ lsp.ts_ls.setup({
         vim.keymap.set("n", "<space>fm", function()
             local cursor = vim.api.nvim_win_get_cursor(0)
             vim.cmd("silent !prettier --write %")
+            cursor[1] = math.min(cursor[1], vim.api.nvim_buf_line_count(0))
             vim.api.nvim_win_set_cursor(0, cursor)
         end, {})
     end
