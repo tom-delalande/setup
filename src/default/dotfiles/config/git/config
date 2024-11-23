@@ -9,9 +9,6 @@
 [core]
     editor = nvim
 
-[includeIf "gitdir:~/vgw/"]
-    path = ./vgw
-
 [push]
     autoSetupRemote = true
 
