@@ -6,17 +6,18 @@ return {
             { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
         },
         config = function()
+            local default_theme = "ivy"
             require('telescope').setup({
                 pickers = {
-                    find_files = {
-                        theme = "ivy",
-                    },
-                    live_grep = {
-                        theme = "ivy",
-                    },
-                    old_files = {
-                        theme = "ivy",
-                    }
+                    find_files = { theme = default_theme },
+                    live_grep = { theme = default_theme },
+                    old_files = { theme = default_theme },
+                    help_tags = { theme = default_theme },
+                    diagnostics = { theme = default_theme },
+                    git_commits = { theme = default_theme },
+                    git_status = { theme = default_theme },
+                    commands = { theme = default_theme },
+                    builtin = { theme = default_theme },
                 },
                 extensions = {
                     fzf = {}
@@ -31,6 +32,8 @@ return {
             vim.keymap.set("n", "<leader>xx", require('telescope.builtin').diagnostics, {})
             vim.keymap.set("n", "<leader>cm", require('telescope.builtin').git_commits, {})
             vim.keymap.set("n", "<leader>gt", require('telescope.builtin').git_status, {})
+            vim.keymap.set("n", "<leader>fc", require('telescope.builtin').commands, {})
+            vim.keymap.set("n", "<leader>fb", require('telescope.builtin').builtin, {})
             vim.keymap.set("n", "<leader>fa", function()
                 require('telescope.builtin').find_files({ follow = true, no_ignore = true, hidden = true })
             end, {})
