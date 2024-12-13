@@ -8,12 +8,3 @@ vim.keymap.set("x", "gp", ":Gitsigns preview_hunk_inline<CR>", {})
 vim.keymap.set("x", "gb", ":Gitsigns toggle_current_line_blame<CR>", {})
 
 vim.keymap.set("n", "Q", ":q<CR>", {})
-
-vim.keymap.set("n", "<leader>fr", ":Telescope resume <CR>", {})
-vim.keymap.set("n", "<leader>ff", ":Telescope find_files <CR>", {})
-vim.keymap.set("n", "<leader>fw", ":Telescope live_grep <CR>", {})
-vim.keymap.set("n", "<leader>fa", ":Telescope find_files follow=true no_ignore=true hidden=true <CR>", {})
-vim.keymap.set("n", "<leader>fo", ":Telescope oldfiles <CR>", {})
-vim.keymap.set("n", "<leader>cm", ":Telescope git_commits <CR>", {})
-vim.keymap.set("n", "<leader>gt", ":Telescope git_status <CR>", {})
-vim.keymap.set("n", "<leader>xx", ":Telescope diagnostics <CR>", {})
