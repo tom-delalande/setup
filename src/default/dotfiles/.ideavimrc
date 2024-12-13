@@ -1,0 +1,28 @@
+let mapleader = " "
+
+set mouse=a
+set commentary
+set surround
+set ideajoin
+set multiple-cursors
+set highlightedyank
+set quickscope
+
+map <leader>e :action ActivateProjectToolWindow<CR>
+
+nmap Q :q<CR>
+nmap Z :wqa<CR>
+
+nmap <leader>ff :action Find<CR>
+nmap <leader>fw :action FindInPath<CR>
+nmap <leader>fo :action RecentFiles<CR>
+nmap <leader>fm :action ReformatCode<CR>
+nmap <leader>rn :action RenameElement<CR>
+nmap <leader>9 :action Debug<CR>
+nmap <leader>ll :source ~/.ideavimrc<CR>
+nmap <leader>gi :action GotoImplementation<CR>
+nmap <leader>gd :action GotoDeclaration<CR>
+nmap <leader>gI :action GotoSuperMethod<CR>
+
+nmap gcc <Action>(CommentByLineComment)
+vmap gcc <Action>(CommentByLineComment)

@@ -137,11 +137,13 @@ require("lazy").setup({
 
                 ui.setup()
 
-                require("navim-dap-virtual-text").setup({
+                require("nvim-dap-virtual-text").setup({
                 })
                 vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, {})
                 vim.keymap.set("n", "<leader>gb", dap.run_to_cursor, {})
-                vim.keymap.set("n", "<leader>k", ui.eval(nil, { enter = true }), {})
+                vim.keymap.set("n", "<leader>k", function()
+                    ui.eval(nil, { enter = true })
+                end, {})
                 vim.keymap.set("n", "<leader>1", dap.continue, {})
                 vim.keymap.set("n", "<leader>2", dap.step_into, {})
                 vim.keymap.set("n", "<leader>3", dap.step_over, {})

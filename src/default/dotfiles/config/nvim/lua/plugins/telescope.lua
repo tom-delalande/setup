@@ -31,7 +31,9 @@ return {
             vim.keymap.set("n", "<leader>xx", require('telescope.builtin').diagnostics, {})
             vim.keymap.set("n", "<leader>cm", require('telescope.builtin').git_commits, {})
             vim.keymap.set("n", "<leader>gt", require('telescope.builtin').git_status, {})
-            vim.keymap.set("n", "<leader>fa", require('telescope.builtin').find_files({ follow = true, no_ignore = true, hidden = true }) , {})
+            vim.keymap.set("n", "<leader>fa", function()
+                require('telescope.builtin').find_files({ follow = true, no_ignore = true, hidden = true })
+            end, {})
         end
     },
 }
