@@ -20,9 +20,9 @@ nmap <leader>fm :action ReformatCode<CR>
 nmap <leader>rn :action RenameElement<CR>
 nmap <leader>9 :action Debug<CR>
 nmap <leader>ll :source ~/.ideavimrc<CR>
-nmap <leader>gi :action GotoImplementation<CR>
-nmap <leader>gd :action GotoDeclaration<CR>
-nmap <leader>gI :action GotoSuperMethod<CR>
+nmap gi :action GotoImplementation<CR>
+nmap gd :action GotoDeclaration<CR>
+nmap gI :action GotoSuperMethod<CR>
 
 nmap gcc <Action>(CommentByLineComment)
 vmap gcc <Action>(CommentByLineComment)
