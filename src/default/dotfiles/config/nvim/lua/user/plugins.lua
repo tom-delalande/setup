@@ -242,30 +242,7 @@ require("lazy").setup({
         },
         { 'L3MON4D3/LuaSnip' },
         "leafgarland/typescript-vim",
-        {
-            "evanleck/vim-svelte",
-            dependencies = {
-                "othree/html5.vim",
-                "pangloss/vim-javascript"
-            }
-        },
         { "simrat39/rust-tools.nvim" },
-        {
-            "akinsho/flutter-tools.nvim",
-            dependencies = {
-                'nvim-lua/plenary.nvim',
-                'stevearc/dressing.nvim',
-            },
-            config = function()
-                require("flutter-tools").setup {}
-            end
-        },
-        {
-            "ziglang/zig.vim",
-            config = function()
-                vim.g.zig_fmt_autosave = 0
-            end
-        },
         "mbbill/undotree",
         "tpope/vim-surround",
         {

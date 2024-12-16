@@ -48,6 +48,7 @@ yabai -m config window_gap                   0
 
 yabai -m rule --add app="CleanShot X" manage=off mouse_follows_focus=off
 yabai -m rule --add app="Reaper" manage=off mouse_follows_focus=off
+yabai -m rule --add app="Balatro" manage=off mouse_follows_focus=off
 
 yabai -m rule --add app="WezTerm" space=^1
 yabai -m rule --add app="Arc" space=^2
