@@ -240,8 +240,32 @@ require("lazy").setup({
                 'hrsh7th/cmp-nvim-lua',
             },
         },
+        {
+            "pmizio/typescript-tools.nvim",
+            dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+            config = function()
+                vim.keymap.set("n", "<space>fl", function()
+                    local cursor = vim.api.nvim_win_get_cursor(0)
+                    vim.cmd("silent !prettier --write %")
+                    cursor[1] = math.min(cursor[1], vim.api.nvim_buf_line_count(0))
+                    vim.api.nvim_win_set_cursor(0, cursor)
+                end)
+                require("typescript-tools").setup {
+                    on_attach = function(client)
+                        client.server_capabilities.documentFormattingProvider = false
+                        client.server_capabilities.documentRangeFormattingProvider = false
+                        vim.keymap.set("n", "<space>fm", function()
+                            local cursor = vim.api.nvim_win_get_cursor(0)
+                            vim.cmd("silent !prettier --write %")
+                            cursor[1] = math.min(cursor[1], vim.api.nvim_buf_line_count(0))
+                            vim.api.nvim_win_set_cursor(0, cursor)
+                        end)
+                    end,
+                }
+            end
+        },
         { 'L3MON4D3/LuaSnip' },
-        "leafgarland/typescript-vim",
+        -- "leafgarland/typescript-vim",
         { "simrat39/rust-tools.nvim" },
         "mbbill/undotree",
         "tpope/vim-surround",

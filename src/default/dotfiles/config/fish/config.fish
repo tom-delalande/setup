@@ -30,6 +30,7 @@ set -Ux DEV_DIR "$HOME/dev"
 set -Ux DEV_DIR "$HOME/dev"
 alias vim nvim
 alias cat bat
+alias sqlite /opt/homebrew/opt/sqlite/bin/sqlite3
 
 function localw
     tmux new -ds tasks &> /dev/null

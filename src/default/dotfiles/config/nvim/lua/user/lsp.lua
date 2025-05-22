@@ -14,7 +14,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         vim.keymap.set("n", "gi", ":Telescope lsp_implementation", opts)
         vim.keymap.set("n", "<space>D", ":Telescope lsp_type_definitions", opts)
-        vim.keymap.set("n", "gr", ":Telescope lsp_references <CR>", opts)
+        vim.keymap.set("n", "gr", function()
+            require('telescope.builtin').lsp_references({ include_declaration = false })
+        end, opts)
         vim.keymap.set("n", "<space>ll", ":LspRestart <CR>", opts)
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -35,33 +37,26 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 local servers = {
     'zls',
-    'kotlin_language_server',
     'terraformls',
     'jsonls',
     'rust_analyzer',
     'nim_langserver',
-    'eslint',
     'templ',
 }
-
-lsp.ts_ls.setup({
-    capabilities = capabilities,
-    on_attach = function()
-        vim.keymap.set("n", "<space>fm", function()
-            local cursor = vim.api.nvim_win_get_cursor(0)
-            vim.cmd("silent !prettier --write %")
-            cursor[1] = math.min(cursor[1], vim.api.nvim_buf_line_count(0))
-            vim.api.nvim_win_set_cursor(0, cursor)
-        end, {})
-    end
-})
-
 
 for _, server in ipairs(servers) do
     lsp[server].setup({
         capabilities = capabilities,
     })
 end
+
+lsp.kotlin.setup({
+    capabilities = capabilities,
+    cmd = { "kotlin-ls", "--stdio" },
+    single_file_support = true,
+    filetypes = { "kotlin" },
+    root_markers = { "build.gradle", "build.gradle.kts", "pom.xml" },
+})
 
 lsp.sourcekit.setup({
     capabilities = capabilities,
