@@ -1,6 +1,8 @@
 
 # Instructions
 
+## Ansible
+
 1. Upgrade pip
 ```sh
 sudo pip3 install --upgrade pip
@@ -28,4 +30,13 @@ ansible-playbook main.yml --ask-become-pass --ask-vault-pass --tags brew nvim ss
 I don't think I should need to run this but I'm leaving it here incase
 ```
 sudo chown -R "$USER":admin /usr/local
+```
+
+## Nix
+
+My Nix configuration is based off https://github.com/Misterio77/nix-starter-configs and takes inspiration from https://github.com/vasujain275/rudra.
+
+```sh
+cd install/nix
+sudo nixos-rebuild switch --flake .#nixos
 ```
