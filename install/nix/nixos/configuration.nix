@@ -141,39 +141,48 @@
   systemd.services."autovt@tty1".enable = false;
   
   environment.systemPackages = with pkgs; [
-    lua
-
-    blender
-    davinci-resolve
-    discord
-    efibootmgr
-    figma-linux
-    fish
+    # Core
     firefox
-    fzf
-    gimp3
+
+    # Dev
+    fish
     git
-    gparted
-    gradle
-    gnumake
-    inkscape
-    jdk24
-    kitty
-    kotlin
-    krita
-    lazygit
-    neovim
-    obs-studio
-    obsidian
-    qbittorrent
-    reaper
-    sdl3
+    fzf
     sesh
     starship
-    ticktick
+    lazygit
+    neovim
     tmux
     wezterm
     zoxide
+
+    # # Dev - Work
+    # gradle
+    # jdk24
+    # kotlin
+    #
+    # # Create
+    # blender
+    # davinci-resolve
+    # figma-linux
+    # inkscape
+    # krita
+    # obsidian
+    # reaper
+    #
+    # # Play
+    # discord
+    #
+    # # Extra
+    # efibootmgr
+    # lua
+    # gimp3
+    # gparted
+    # gnumake
+    # obs-studio
+    # qbittorrent
+    # sdl3
+    # ticktick
   ];
 
   programs.steam = {
