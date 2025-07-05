@@ -33,4 +33,3 @@ src/default/dotfiles/config/tmux/tmux
 src/default/dotfiles/config/wezterm/wezterm
 src/default/dotfiles/config/yabai/yabai
 src/default/dotfiles/config/fish/fish_variables
-install/nix/nixos/hardware-configuration.nix
