@@ -37,9 +37,9 @@ sudo chown -R "$USER":admin /usr/local
 My Nix configuration is based off https://github.com/Misterio77/nix-starter-configs and takes inspiration from https://github.com/vasujain275/rudra.
 
 ```sh
-nix-shell -p git nvim
+nix-shell -p git neovim
 git clone https://github.com/tom-delalande/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles/install/nix
-nixos-generate-config --show-hardware-config > nixos/harware-configuration.nix
+nixos-generate-config --show-hardware-config > nixos/hardware-configuration.nix
 sudo nixos-rebuild switch --flake .#nixos
 ```
