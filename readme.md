@@ -43,4 +43,3 @@ cd ~/.dotfiles/install/nix
 nixos-generate-config --show-hardware-config > nixos/harware-configuration.nix
 sudo nixos-rebuild switch --flake .#nixos
 ```
-```
