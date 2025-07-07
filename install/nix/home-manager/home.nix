@@ -48,12 +48,13 @@
 
       ".config/starship.toml".source = ../../../src/default/dotfiles/config/starship.toml;
       ".config/git".source = ../../../src/default/dotfiles/config/git;
-      ".config/fish".source = ../../../src/default/dotfiles/config/fish;
       ".config/lazygit".source = ../../../src/default/dotfiles/config/lazygit;
       ".config/tmux".source = ../../../src/default/dotfiles/config/tmux;
       ".config/wezterm".source = ../../../src/default/dotfiles/config/wezterm;
+      ".config/hypr".source = ../../../src/default/dotfiles/config/hypr;
+      ".config/wofi".source = ../../../src/default/dotfiles/config/wofi;
+      ".config/waybar".source = ../../../src/default/dotfiles/config/waybar;
       ".config/nvim".source = config.lib.file.mkOutOfStoreSymlink "/home/mable/.dotfiles/src/default/dotfiles/config/nvim";
-
     };
   };
 
@@ -66,7 +67,6 @@
 
   programs.starship.enable = true;
   programs.git.enable = true;
-  programs.fish.enable = true;
   programs.lazygit.enable = true;
   programs.tmux.enable = true;
   programs.wezterm.enable = true;
@@ -88,6 +88,25 @@
         lua51Packages.mimetypes
     ];
   };
+  programs.fish = {
+      enable = true;
+       interactiveShellInit = ''
+        set fish_greeting
+
+        function vim --wraps=nvim --description 'alias vim nvim'
+          nvim $argv; 
+        end
+        
+        tmux new-session -A -s main
+        clear
+        zoxide init --cmd cd fish | source
+        starship init fish | source
+       '';
+  };
+  
+  programs.kitty.enable = true; # required for the default Hyprland config
+  wayland.windowManager.hyprland.enable = true;
+
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
