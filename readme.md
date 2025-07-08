@@ -38,8 +38,8 @@ My Nix configuration is based off https://github.com/Misterio77/nix-starter-conf
 
 ```sh
 nix-shell -p git neovim
-git clone https://github.com/tom-delalande/.dotfiles.git ~/.dotfiles
-cd ~/.dotfiles/install/nix
+git clone https://github.com/tom-delalande/setup.git ~/setup
+cd ~/setup/install/nix
 nixos-generate-config --show-hardware-config > nixos/hardware-configuration.nix
 sudo nixos-rebuild switch --flake .#nixos
 ```

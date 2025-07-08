@@ -5,7 +5,7 @@
 # Dependencies: git, curl, zsh
 
 export repo_host="https://github.com/"
-export repo_path="thomas-delalande/.dotfiles.git"
+export repo_path="tom-delalande/setup.git"
 export dotfiles_dir="$HOME/setup"
 
 export brewfile="brewfile-main.rb"

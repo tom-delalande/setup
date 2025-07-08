@@ -43,18 +43,18 @@
     homeDirectory = "/home/mable";
 
     file = {
-      ".zshrc".source = ../../../src/default/dotfiles/zshrc;
-      ".ideavimrc".source = ../../../src/default/dotfiles/.ideavimrc;
+      ".zshrc".source = ../../../config/zshrc;
+      ".ideavimrc".source = ../../../config/ideavimrc;
 
-      ".config/starship.toml".source = ../../../src/default/dotfiles/config/starship.toml;
-      ".config/git".source = ../../../src/default/dotfiles/config/git;
-      ".config/lazygit".source = ../../../src/default/dotfiles/config/lazygit;
-      ".config/tmux".source = ../../../src/default/dotfiles/config/tmux;
-      ".config/wezterm".source = ../../../src/default/dotfiles/config/wezterm;
-      ".config/hypr".source = ../../../src/default/dotfiles/config/hypr;
-      ".config/wofi".source = ../../../src/default/dotfiles/config/wofi;
-      ".config/waybar".source = ../../../src/default/dotfiles/config/waybar;
-      ".config/nvim".source = config.lib.file.mkOutOfStoreSymlink "/home/mable/.dotfiles/src/default/dotfiles/config/nvim";
+      ".config/starship.toml".source = ../../../config/starship.toml;
+      ".config/git".source = ../../../config/git;
+      ".config/lazygit".source = ../../../config/lazygit;
+      ".config/tmux".source = ../../../config/tmux;
+      ".config/wezterm".source = ../../../config/wezterm;
+      ".config/hypr".source = ../../../config/hypr;
+      ".config/wofi".source = ../../../config/wofi;
+      ".config/waybar".source = ../../../config/waybar;
+      ".config/nvim".source = config.lib.file.mkOutOfStoreSymlink "/home/mable/config/nvim";
     };
   };
 
