@@ -1,2 +1,0 @@
-
-fzf --fish | source

@@ -1,29 +1,26 @@
 ---
-src_directory: ../../src/default
-dotfiles_directory: "{{ lookup('env', 'HOME') }}/.dotfiles/src/default/dotfiles"
+dotfiles_directory: "{{ lookup('env', 'HOME') }}/setup/config"
 dotfiles_files:
   - config/git
-  - config/alacritty
   - config/nvim
-  - config/skhd
-  - config/yabai
   - config/tmux
   - config/fish
   - config/lazygit
   - config/starship.toml
   - config/wezterm
+  - config/aerospace
   - zshrc
 
-homebrew_file: "{{ src_directory }}/Brewfile.rb"
+homebrew_file: "../../config/brewfile-main.rb"
 homebrew_repo: https://github.com/Homebrew/brew
 homebrew_prefix: "{{ (ansible_machine == 'arm64') | ternary('/opt/homebrew', '/usr/local') }}"
 homebrew_install_path: "{{ homebrew_prefix }}/Homebrew"
 homebrew_brew_bin_path: "{{ homebrew_prefix }}/bin"
 
 wallpaper_url: https://media.idownloadblog.com/wp-content/uploads/2021/06/macOS-Monterey-wallpaper-Dark.jpg
-osx_script: "{{ src_directory }}/osx --no-restart"
+osx_script: "../../config/osx --no-restart"
 
-ssh_keys_directory: "{{ src_directory }}/ssh"
+ssh_keys_directory: "../../config/ssh"
 ssh_keys:
   - id_ed25519
 ssh_config_files:
