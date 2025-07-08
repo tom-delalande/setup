@@ -164,11 +164,17 @@
     tmux
     wezterm
     zoxide
+    fzf
+    postgresql
+    sqlite
+    wget
 
     # Core - 2
     spotify
     bitwarden-desktop
     obsidian
+    discord
+    ticktick
 
     # # Dev - Work
     # gradle
@@ -184,7 +190,6 @@
     # reaper
     #
     # # Play
-    # discord
     #
     # # Extra
     # efibootmgr
