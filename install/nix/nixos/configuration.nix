@@ -121,27 +121,15 @@
   services.xserver.displayManager.gdm.wayland = true;
   services.xserver.desktopManager.gnome.enable = false;
 
-  # Prevent sleep
-  # systemd.targets.sleep.enable = false;
-  # systemd.targets.suspend.enable = false;
-  # systemd.targets.hibernate.enable = false;
-  # systemd.targets.hybrid-sleep.enable = false;
-
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "au";
     variant = "";
   };
-  
-  
 
-  services.displayManager.autoLogin.enable = false;
+  services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "mable";
 
-  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
-  # systemd.services."getty@tty1".enable = false;
-  # systemd.services."autovt@tty1".enable = false;
-  
   environment.systemPackages = with pkgs; [
     # Core
     firefox
