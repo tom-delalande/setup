@@ -8,6 +8,9 @@ return {
           explorer = {
             auto_close = true,
           },
+          projects = {
+            dev = { "~/dev", "~/projects", "~/dev/work", "~/dev/personal" },
+          },
         },
       },
     },

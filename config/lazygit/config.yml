@@ -4,7 +4,6 @@ os:
   edit: 'nvim'
 gui:
   theme:
-    lightTheme: false
     activeBorderColor:
       - "#a6e3a1" # Green
       - bold
@@ -13,8 +12,6 @@ gui:
     optionsTextColor:
       - "#89b4fa" # Blue
     selectedLineBgColor:
-      - "#313244" # Surface0
-    selectedRangeBgColor:
       - "#313244" # Surface0
     cherryPickedCommitBgColor:
       - "#94e2d5" # Teal
@@ -29,3 +26,4 @@ customCommands:
   - key: '<C-p>'
     command: "git add -A && git commit --allow-empty-message -m '' && git push"
     context: 'localBranches'
+notARepository: skip
