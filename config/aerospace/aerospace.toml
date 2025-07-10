@@ -103,32 +103,33 @@ outer.right =      0
 ### CUSTOM
 alt-shift-enter = 'fullscreen'
 
-alt-q = 'exec-and-forget wezterm'
-alt-f = 'exec-and-forget open ~/Documents'
-alt-b = 'exec-and-forget firefox'
-alt-i = 'exec-and-forget open -a "Spotify"'
-alt-n = 'exec-and-forget wezterm -e nvim'
-alt-t = 'exec-and-forget wezterm -e btop'
-alt-d = 'exec-and-forget wezterm -e lazydocker'
-alt-s = 'exec-and-forget wezterm -e nvim +DBUI'
-alt-g = 'exec-and-forget wezterm -e lazygit'
-alt-o = 'exec-and-forget open -a "Obsidian"'
-alt-p = 'exec-and-forget open -a "TickTick"'
-alt-slash = 'exec-and-forget open -a "Bitwarden"'
+alt-w = 'close'
+alt-q = ['workspace 1', 'exec-and-forget wezterm']
+alt-f = ['workspace 1', 'exec-and-forget open ~/Documents']
+alt-b = ['workspace 2', 'exec-and-forget firefox']
+alt-i = ['workspace 5', 'exec-and-forget open -a "Spotify"']
+alt-n = ['workspace 3', 'exec-and-forget wezterm -e nvim']
+alt-t = ['workspace 1', 'exec-and-forget wezterm -e btop']
+alt-d = ['workspace 3', 'exec-and-forget wezterm -e lazydocker']
+alt-s = ['workspace 3', 'exec-and-forget wezterm -e nvim +DBUI']
+alt-g = ['workspace 3', 'exec-and-forget wezterm -e lazygit']
+alt-o = ['workspace 5', 'exec-and-forget open -a "Obsidian"']
+alt-p = ['workspace 4', 'exec-and-forget open -a "TickTick"']
+alt-z = ['workspace 2', 'exec-and-forget open -a "Bitwarden"']
 
-alt-a = 'exec-and-forget firefox --new-tab="https://chatgpt.com"'
-alt-c = 'exec-and-forget firefox --new-tab="https://calendar.google.com"'
-alt-e = 'exec-and-forget firefox --new-tab="https://mail.google.com"'
-alt-y = 'exec-and-forget firefox --new-tab="https://youtube.com/"'
-alt-m = 'exec-and-forget firefox --new-tab="https://messages.google.com/web/conversations"'
+alt-a = ['workspace 2', 'exec-and-forget firefox --new-tab="https://chatgpt.com"']
+alt-c = ['workspace 2', 'exec-and-forget firefox --new-tab="https://calendar.google.com"']
+alt-e = ['workspace 2', 'exec-and-forget firefox --new-tab="https://mail.google.com"']
+alt-y = ['workspace 2', 'exec-and-forget firefox --new-tab="https://youtube.com/"']
+alt-m = ['workspace 2', 'exec-and-forget firefox --new-tab="https://messages.google.com/web/conversations"']
 
 # Work
-alt-ctrl-b = 'exec-and-forget open -a "Google Chrome"'
-alt-ctrl-a = 'exec-and-forget open -a "Google Chrome" "https://chatgpt.com"'
-alt-ctrl-c = 'exec-and-forget open -a "Google Chrome" "https://calendar.google.com"'
-alt-ctrl-e = 'exec-and-forget open -a "Google Chrome" "https://main.google.com"'
-alt-ctrl-d = 'exec-and-forget open -a "Google Chrome" "https://meet.google.com"'
-alt-ctrl-m = 'exec-and-forget open /Applications/Slack.app'
+alt-ctrl-b = ['workspace 2', 'exec-and-forget open -a "Google Chrome"']
+alt-ctrl-a = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://chatgpt.com"']
+alt-ctrl-c = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://calendar.google.com"']
+alt-ctrl-e = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://main.google.com"']
+alt-ctrl-d = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://meet.google.com"']
+alt-ctrl-m = ['workspace 4', 'exec-and-forget open /Applications/Slack.app']
 
 ### END CUSTOM
 
