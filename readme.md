@@ -34,6 +34,18 @@ sudo chown -R "$USER":admin /usr/local
 
 ## Nix
 
+### OS
+1. New Partition Table: GPT
+
+| Name     | Size    | File System    | Mount Point | Flags     |
+| -------- | ------- | -------------- | ----------- | --------- |
+| Boot     | 100MB   | FAT32          | /boot       | boot      |
+| Grub     | 8MB     | unformatted    | *None*      | bios-grub |
+| Swap     | 8GB     | linuxswap      | *None*      | swap    |
+| Root     | *       | ext4           | /           | root
+
+2. Install Boot Loader on /boot
+
 My Nix configuration is based off https://github.com/Misterio77/nix-starter-configs and takes inspiration from https://github.com/vasujain275/rudra.
 
 ```sh
