@@ -130,6 +130,7 @@ alt-ctrl-c = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://c
 alt-ctrl-e = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://main.google.com"']
 alt-ctrl-d = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://meet.google.com"']
 alt-ctrl-m = ['workspace 4', 'exec-and-forget open /Applications/Slack.app']
+alt-ctrl-n = ['workspace 3', 'exec-and-forget open "/Applications/IntelliJ IDEA CE.app"']
 
 ### END CUSTOM
 
