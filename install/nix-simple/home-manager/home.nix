@@ -50,7 +50,7 @@
       ".config/lazygit".source = ../../../config/lazygit;
       ".config/tmux".source = ../../../config/tmux;
       ".config/wezterm".source = ../../../config/wezterm;
-      ".config/nvim".source = config.lib.file.mkOutOfStoreSymlink "/home/mable/config/nvim";
+      ".config/nvim".source = config.lib.file.mkOutOfStoreSymlink "/home/mable/setup/config/nvim";
     };
   };
 
@@ -81,18 +81,25 @@
   };
   programs.fish = {
       enable = true;
-       interactiveShellInit = ''
-        set fish_greeting
-
-        function vim --wraps=nvim --description 'alias vim nvim'
-          nvim $argv; 
+      shellInit = ''
+        for p in /run/current-system/sw/bin ~/bin
+          if not contains $p $fish_user_paths
+            set -g fish_user_paths $p $fish_user_paths
+          end
         end
-        
-        tmux new-session -A -s main
-        clear
-        zoxide init --cmd cd fish | source
-        starship init fish | source
-       '';
+      '';
+      interactiveShellInit = ''
+       set fish_greeting
+
+       function vim --wraps=nvim --description 'alias vim nvim'
+         nvim $argv; 
+       end
+       
+       tmux new-session -A -s main
+       clear
+       zoxide init --cmd cd fish | source
+       starship init fish | source
+      '';
   };
   
   # Nicely reload system units when changing configs

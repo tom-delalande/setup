@@ -71,9 +71,10 @@
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
   };
 
-  # Bootloader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # Bootloader.
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -142,6 +143,7 @@
     firefox
     neovim
     git
+    clang
 
     # Dev
     fish
@@ -171,6 +173,9 @@
     # Extra
     obs-studio
     sdl3
+    pkg-config
+    unzip
+    bear
   ];
 
   programs.bash = {
