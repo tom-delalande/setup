@@ -54,7 +54,7 @@
       ".config/hypr".source = ../../../config/hypr;
       ".config/wofi".source = ../../../config/wofi;
       ".config/waybar".source = ../../../config/waybar;
-      ".config/nvim".source = config.lib.file.mkOutOfStoreSymlink "/home/mable/config/nvim";
+      ".config/nvim".source = config.lib.file.mkOutOfStoreSymlink "/home/mable/setup/config/nvim";
     };
   };
 
