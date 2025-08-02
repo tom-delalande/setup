@@ -171,6 +171,7 @@
     krita
 
     # Extra
+    clang-tools
     obs-studio
     sdl3
     pkg-config
