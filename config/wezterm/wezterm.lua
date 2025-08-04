@@ -5,7 +5,7 @@ return {
 	font_size = 18.0,
 	-- font_size = 24.0,
 	enable_tab_bar = false,
-	window_decorations = "RESIZE",
+	window_decorations = "NONE",
 	color_scheme = "Catppuccin Mocha",
 	window_close_confirmation = "NeverPrompt",
 	-- window_background_opacity = 0.3,
