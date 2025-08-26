@@ -6,13 +6,9 @@
 
 export repo_host="https://github.com/"
 export repo_path="tom-delalande/setup.git"
-export dotfiles_dir="$HOME/setup"
+export setup="$HOME/setup"
 
 export brewfile="brewfile-main.rb"
-
-if [ "$1" == "work" ]; then
-  brewfile="Brewfile_work.rb"
-fi
 
 set -e
 
@@ -24,13 +20,13 @@ install_brew() {
 }
 
 clone_repo() {
-  if [ ! -d "${dotfiles_dir}" ]; then
-    git clone "${repo_host}/${repo_path}" "${dotfiles_dir}"
+  if [ ! -d "${setup}" ]; then
+    git clone "${repo_host}/${repo_path}" "${setup}"
   fi
 }
 
 install_dependencies() {
-  brew bundle --file ${dotfiles_dir}/config/${brewfile} --cleanup
+  brew bundle --file ${setup}/config/${brewfile} --cleanup
 }
 
 create_dirs() {
@@ -44,7 +40,7 @@ create_dirs() {
 
 symlink_file() {
   if [ ! -e "$HOME/$1" ]; then
-    ln -sfv "${dotfiles_dir}/config/$2" "$HOME/$1"
+    ln -sfv "${setup}/config/$2" "$HOME/$1"
   else
     echo "$1 already exists."
   fi
@@ -85,7 +81,29 @@ update_nvim_plugins() {
   nvim --headless +Lazy update +qa
 }
 
-## Start of the script
+configure_osx() {
+  defaults write NSGlobalDomain InitialKeyRepeat -int 20
+  defaults write NSGlobalDomain KeyRepeat -int 1
+  defaults write -g com.apple.mouse.scaling 9.0
+  defaults write -g com.apple.trackpad.scaling 9.0
+  defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+  osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/setup/wallpaper.jpg"'
+  defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+  defaults write com.apple.screencapture location -string "${HOME}/Downloads"
+  defaults write com.apple.screencapture type -string "png"
+  defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+  defaults write com.apple.finder ShowStatusBar -bool true
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+  defaults write com.apple.dock tilesize -int 30
+  defaults write com.apple.dock expose-animation-duration -float 0.15
+  osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to true'
+  defaults write com.apple.dock orientation -string right
+  defaults write com.apple.dock persistent-apps -array
+  defaults write com.apple.dock autohide -bool true
+  defaults write com.apple.dock "autohide-delay" -float "0.0"
+  killall Dock
+}
+
 install_brew
 clone_repo
 install_dependencies
@@ -93,3 +111,4 @@ create_dirs
 symlink_files
 install_nerd_fonts
 update_nvim_plugins
+configure_osx
