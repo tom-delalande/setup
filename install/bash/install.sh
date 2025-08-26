@@ -87,7 +87,7 @@ configure_osx() {
   defaults write -g com.apple.mouse.scaling 9.0
   defaults write -g com.apple.trackpad.scaling 9.0
   defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
-  osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/setup/wallpaper.jpg"'
+  osascript -e 'tell application "System Events" to tell every desktop to set picture to "~/setup/wallpaper.png"'
   defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
   defaults write com.apple.screencapture location -string "${HOME}/Downloads"
   defaults write com.apple.screencapture type -string "png"
