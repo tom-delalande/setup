@@ -1,5 +1,7 @@
 set fish_greeting
 
+set -gx SSH_AUTH_SOCK "$HOME/.bitwarden-ssh-agent.sock"
+
 if status is-interactive
     # Commands to run in interactive sessions can go here
     fish_config theme choose "ayu Dark"
@@ -7,12 +9,6 @@ if status is-interactive
 end
 
 set -Ux XDG_CONFIG_HOME "$HOME/.config"
-function gwc
-    set repo $argv[1]
-    git clone git@github-vgw:vgw-tom/$repo $VGW_DIR/$repo
-    cd $VGW_DIR/$repo
-    git remote add upstream git@github-vgw:vgw/$repo
-end
 
 function commit
     git add -A
@@ -26,8 +22,6 @@ bind \cg lazygit
 bind \cd "nvim +DBUI"
 bind \cp commit
 set -Ux EDITOR nvim
-set -Ux VGW_DIR "$HOME/vgw"
-set -Ux DEV_DIR "$HOME/dev"
 set -Ux DEV_DIR "$HOME/dev"
 alias vim nvim
 alias cat bat
