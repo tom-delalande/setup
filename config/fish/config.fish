@@ -1,6 +1,6 @@
 set fish_greeting
 
-set -gx SSH_AUTH_SOCK "$HOME/.bitwarden-ssh-agent.sock"
+# set -gx SSH_AUTH_SOCK "$HOME/.bitwarden-ssh-agent.sock"
 
 if status is-interactive
     # Commands to run in interactive sessions can go here
