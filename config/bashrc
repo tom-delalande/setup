@@ -5,4 +5,5 @@ source ~/.local/share/omarchy/default/bash/rc
 # Add your own exports, aliases, and functions here.
 #
 # Make an alias for invoking commands you use constantly
+export SSH_AUTH_SOCK=$HOME/.bitwarden-ssh-agent.sock
 alias vim='nvim'
