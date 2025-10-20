@@ -45,10 +45,17 @@ symlink_file() {
 symlink_files() {
   # symlink_file .bashrc .bashrc
   symlink_file .config/git git
-  rm -rf .config/nvim
+  rm -rf $HOME/.config/nvim
   symlink_file .config/nvim nvim
   symlink_file .config/tmux tmux
   symlink_file .config/fish fish
+
+  rm -rf $HOME/.config/hypr/monitors.conf
+  symlink_file .config/hypr/monitors.conf hypr/monitors.conf
+
+  rm -rf $HOME/.bashrc
+  symlink_file .bashrc bashrc
+
   # symlink_file .config/lazygit lazygit
   # symlink_file .config/starship.toml starship.toml
 }
@@ -66,8 +73,8 @@ configure_omarchy() {
 }
 
 clone_repo
-remove_packages
-install_packages
+# remove_packages
+# install_packages
 create_dirs
 symlink_files
 update_nvim_plugins
