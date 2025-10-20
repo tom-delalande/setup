@@ -16,6 +16,7 @@ clone_repo() {
 
 remove_packages() {
   sudo pacman -Rsu \
+    1password \
     1password-beta \
     1password-cli
 
