@@ -16,14 +16,18 @@ clone_repo() {
 
 remove_packages() {
   sudo pacman -Rsu \
-    1password \
     1password-beta \
     1password-cli
 
 }
 install_packages() {
   sudo pacman -Syu \
-    bitwarden
+    bitwarden \
+    obs-studio \
+    steam \
+    syncthing \
+    audacity \
+    shotcut
 }
 
 create_dirs() {
@@ -71,11 +75,13 @@ configure_omarchy() {
   omarchy-webapp-remove WhatsApp
   omarchy-webapp-remove X
   omarchy-webapp-remove Zoom
+
+  sed '3s/^/#' ~/.local/share/omarchy/default/hypr/autostart.conf
 }
 
 clone_repo
-# remove_packages
-# install_packages
+remove_packages
+install_packages
 create_dirs
 symlink_files
 update_nvim_plugins
