@@ -27,7 +27,8 @@ install_packages() {
     steam \
     syncthing \
     audacity \
-    shotcut
+    shotcut \
+    tmux
 }
 
 create_dirs() {
@@ -75,6 +76,7 @@ configure_omarchy() {
   omarchy-webapp-remove WhatsApp
   omarchy-webapp-remove X
   omarchy-webapp-remove Zoom
+  omarchy-webapp-remove Fizzy
 
   sed '3s/^/#' ~/.local/share/omarchy/default/hypr/autostart.conf
 }

@@ -38,4 +38,21 @@ return {
       },
     },
   },
+  {
+    "mason-org/mason.nvim",
+    opts = {
+      ensure_installed = {
+        "stylua",
+        "shellcheck",
+        "shfmt",
+        "flake8",
+        "typescript-language-server",
+        "gopls",
+        "kotlin-lsp",
+        "clangd",
+        "zls",
+        "tailwindcss-language-server",
+      },
+    },
+  },
 }
