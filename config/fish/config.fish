@@ -8,6 +8,15 @@ if status is-interactive
     fish_config prompt choose scales
 end
 
+function fish_prompt
+    set_color -o cyan
+    printf '» '
+    set_color normal
+end
+
+function fish_right_prompt
+end
+
 set -Ux XDG_CONFIG_HOME "$HOME/.config"
 
 function commit
@@ -67,4 +76,3 @@ end
 tmux new-session -A -s main
 clear
 zoxide init --cmd cd fish | source
-starship init fish | source
