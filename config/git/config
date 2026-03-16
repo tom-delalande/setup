@@ -4,7 +4,7 @@
 [alias]
 	fix = git commit --amend --no-edit
 	st = git status
-    ro = !git fetch origin && git rebase origin
+  ro = !git fetch origin && git rebase origin
 
 [core]
     editor = nvim
@@ -20,5 +20,9 @@
 
 [push]
     default = current
+
 [init]
 	defaultBranch = main
+
+[gpg]
+	format = ssh

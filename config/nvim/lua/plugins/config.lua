@@ -4,9 +4,17 @@ return {
     -- opts will be merged with the parent spec
     opts = {
       picker = {
+        hidden = true,
+        ignored = true,
         sources = {
+          files = {
+            hidden = true,
+            ignored = true,
+          },
           explorer = {
             auto_close = true,
+            hidden = true,
+            ignored = true,
           },
           projects = {
             dev = { "~/dev", "~/projects", "~/dev/work", "~/dev/personal" },
