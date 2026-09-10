@@ -2,7 +2,6 @@
 tap "nikitabobko/tap"
 cask "nikitabobko/tap/aerospace", trusted: true
 cask "bitwarden"
-cask "codex-app"
 cask "docker-desktop"
 cask "firefox"
 cask "google-chrome"

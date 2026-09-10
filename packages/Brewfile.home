@@ -8,7 +8,6 @@ cask "stremio"
 cask "steam"
 cask "chatgpt"
 cask "localsend"
-cask "codex-app"
 
 mas "Davinci Resolve", id: 571213070
 mas "Logic Pro", id: 634148309
