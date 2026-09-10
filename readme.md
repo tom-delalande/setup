@@ -14,29 +14,29 @@ accordion layout by default, with a small part of adjacent windows kept visible.
 | 1 | LLM harness (ChatGPT/Codex, Claude, and OpenCode) |
 | 2 | Browsers (Firefox and Google Chrome) |
 | 3 | Communications and lightweight productivity (Slack, Spotify, TickTick) |
-| 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Bruno, Sublime Text, temporary terminals, Neovim, DBUI) |
-| 5 | Long-running processes and monitoring (tmux `processes`, btop, Lazydocker) |
+| 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Bruno, Sublime Text) |
+| 5 | Terminals, development processes, and monitoring (WezTerm, Neovim, DBUI, tmux `processes`, btop, Lazydocker) |
 | 6 | Steam |
 | 7–8 | Spare/manual workspaces |
 | 9 | Default destination for any app without an explicit routing rule |
 
 Apps are routed when AeroSpace detects a new window, including apps opened from
-Spotlight or the Dock. WezTerm is exempt from automatic routing because each
-terminal launcher chooses workspace 4 or 5 explicitly. System notification
-windows are also exempt.
+Spotlight or the Dock. Every WezTerm window is routed to workspace 5, including
+windows opened outside an AeroSpace binding. System notification windows are
+exempt.
 
 ### AeroSpace application shortcuts
 
 | Binding | Action |
 | ------- | ------ |
-| `Option-Q` | Open a new WezTerm window in workspace 4 |
+| `Option-Q` | Open a new WezTerm window in workspace 5 |
 | `Option-F` | Open `~/Documents` in Finder on workspace 4 |
 | `Option-B` | Open Firefox on workspace 2 |
 | `Option-I` | Open Spotify on workspace 3 |
-| `Option-N` | Open Neovim in WezTerm on workspace 4 |
+| `Option-N` | Open Neovim in WezTerm on workspace 5 |
 | `Option-T` | Open btop in WezTerm on workspace 5 |
 | `Option-D` | Open Lazydocker in WezTerm on workspace 5 |
-| `Option-S` | Open `nvim +DBUI` in WezTerm on workspace 4 |
+| `Option-S` | Open `nvim +DBUI` in WezTerm on workspace 5 |
 | `Option-G` | Open SourceTree on workspace 4 |
 | `Option-O` | Open Obsidian on workspace 4 |
 | `Option-P` | Open TickTick on workspace 3 |
