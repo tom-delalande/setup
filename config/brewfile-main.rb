@@ -50,6 +50,7 @@ brew "node"
 cask "slack"
 cask "sourcetree"
 cask "tablepro"
+cask "bruno"
 brew "fsouza/prettierd/prettierd"
 
 # Extra
