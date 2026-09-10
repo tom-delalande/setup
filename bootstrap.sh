@@ -47,7 +47,7 @@ fi
 if [[ -d "$SETUP_DIRECTORY/.git" ]]; then
   origin="$(git -C "$SETUP_DIRECTORY" remote get-url origin)"
   case "$origin" in
-    https://github.com/tom-delalande/setup.git|git@github.com:tom-delalande/setup.git)
+    https://github.com/tom-delalande/setup.git | git@github.com:tom-delalande/setup.git)
       ;;
     *)
       printf 'Refusing to update %s: unexpected origin %s\n' "$SETUP_DIRECTORY" "$origin" >&2

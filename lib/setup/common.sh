@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC2034 # COLOR_* values are consumed by sourced scripts.
 if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
   readonly COLOR_RESET=$'\033[0m'
   readonly COLOR_BOLD=$'\033[1m'
@@ -61,7 +62,7 @@ validate_phase_list() {
   IFS=','
   for phase in $phase_list; do
     case "$phase" in
-      preflight|homebrew|packages|dotfiles|macos|postflight)
+      preflight | homebrew | packages | dotfiles | macos | postflight)
         ;;
       *)
         IFS="$old_ifs"

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 setup_phase_preflight() {
   log "Preflight checks"
 

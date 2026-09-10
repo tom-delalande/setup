@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 setup_oh_my_zsh() {
   local install_directory="$HOME/.oh-my-zsh"
 
@@ -5,7 +7,7 @@ setup_oh_my_zsh() {
     local origin
     origin="$(git -C "$install_directory" remote get-url origin)"
     case "$origin" in
-      https://github.com/ohmyzsh/ohmyzsh.git|git@github.com:ohmyzsh/ohmyzsh.git)
+      https://github.com/ohmyzsh/ohmyzsh.git | git@github.com:ohmyzsh/ohmyzsh.git)
         printf 'ok: Oh My Zsh is installed\n'
         return
         ;;

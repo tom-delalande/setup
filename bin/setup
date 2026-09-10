@@ -2,10 +2,12 @@
 
 set -Eeuo pipefail
 
-readonly SETUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SETUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly SETUP_ROOT
 export SETUP_ROOT
 
 # shellcheck source=../lib/setup/common.sh
+# shellcheck disable=SC1091
 source "$SETUP_ROOT/lib/setup/common.sh"
 
 usage() {
@@ -58,7 +60,7 @@ while [[ $# -gt 0 ]]; do
     --include-opinionated)
       SETUP_OPINIONATED=1
       ;;
-    -h|--help)
+    -h | --help)
       usage
       exit 0
       ;;
