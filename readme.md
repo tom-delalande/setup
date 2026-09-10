@@ -107,6 +107,25 @@ WezTerm starts in `~/dev`, displays its tab bar even with one tab, and provides
 the standard `Command-T` binding for a new tab. `Command-W` closes the current
 tab without confirmation.
 
+### Bitwarden SSH agent
+
+The shared OpenSSH configuration is stored in `config/ssh/config`. It directs
+SSH clients, including SourceTree when it uses OpenSSH, to the Bitwarden desktop
+app's SSH agent at `~/.bitwarden-ssh-agent.sock`.
+
+Enable **SSH agent** in Bitwarden's settings and select **System Git** in
+SourceTree under **Settings → Git**. Repositories must use SSH remote URLs, such
+as `git@github.com:owner/repository.git`, rather than HTTPS URLs.
+
+The Bash installer links the configuration to `~/.ssh/config`; the Ansible
+`ssh` task installs the same file. Private keys are not copied from this
+repository because Bitwarden manages them. Verify the agent with:
+
+```sh
+SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock" ssh-add -L
+ssh -T git@github.com
+```
+
 ## Ansible
 
 1. Upgrade pip

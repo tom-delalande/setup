@@ -21,8 +21,6 @@ wallpaper_url: https://media.idownloadblog.com/wp-content/uploads/2021/06/macOS-
 osx_script: "../../config/osx --no-restart"
 
 ssh_keys_directory: "../../config/ssh"
-ssh_keys:
-  - id_ed25519
+ssh_keys: []
 ssh_config_files:
-  - authorized_keys
   - config

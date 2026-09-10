@@ -1,0 +1,2 @@
+Host *
+    IdentityAgent ~/.bitwarden-ssh-agent.sock
