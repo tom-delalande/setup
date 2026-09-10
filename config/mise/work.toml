@@ -1,0 +1,5 @@
+[tools]
+node = "26"
+java = "openjdk-25"
+gradle = "9"
+terraform = "1"

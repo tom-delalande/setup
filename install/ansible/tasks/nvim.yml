@@ -1,6 +1,0 @@
----
-  - name: Update NVIM plugins
-    command: " nvim --headless +Lazy update +qa"
-
-  - name: Update NVIM Mason
-    command: " nvim --headless +MasonUpdate +qa"

@@ -78,7 +78,7 @@ on-window-detected = [
     { if = 'test %{app-bundle-id} = com.torusknot.SourceTreeNotMAS', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.TablePro', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.usebruno.app', run = 'move-node-to-workspace 4' },
-    { if = 'test %{app-bundle-id} = com.sublimetext.4', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = dev.zed.Zed', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.valvesoftware.steam', run = 'move-node-to-workspace 6' },
     # Keep every terminal window together, regardless of how Ghostty is launched.
     { if = 'test %{app-bundle-id} = com.mitchellh.ghostty', run = 'move-node-to-workspace 5' },
@@ -160,18 +160,12 @@ alt-q = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty
 alt-f = ['workspace 4', 'exec-and-forget open ~/Documents']
 alt-b = ['workspace 2', 'exec-and-forget firefox']
 alt-i = ['workspace 3', 'exec-and-forget open -a "Spotify"']
-alt-n = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty.app --args -e /opt/homebrew/bin/nvim']
-alt-t = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty.app --args -e /opt/homebrew/bin/btop']
-alt-d = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty.app --args -e /opt/homebrew/bin/lazydocker']
-alt-s = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty.app --args -e /opt/homebrew/bin/nvim +DBUI']
+alt-n = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty.app --args -e nvim']
+alt-s = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty.app --args -e nvim +DBUI']
 alt-g = ['workspace 4', 'exec-and-forget /usr/bin/open -a "Sourcetree"']
 alt-o = ['workspace 4', 'exec-and-forget open -a "Obsidian"']
 alt-p = ['workspace 3', 'exec-and-forget open -a "TickTick"']
 alt-z = ['workspace 4', 'exec-and-forget open -a "Bitwarden"']
-
-# A persistent process terminal. This binding can also be invoked by a macOS
-# Shortcut with: aerospace trigger-binding --mode main alt-ctrl-t
-alt-ctrl-t = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty.app --args -e /opt/homebrew/bin/tmux new-session -A -s processes']
 
 alt-a = ['workspace 2', 'exec-and-forget firefox --new-tab="https://chatgpt.com"']
 alt-c = ['workspace 2', 'exec-and-forget firefox --new-tab="https://calendar.google.com"']
