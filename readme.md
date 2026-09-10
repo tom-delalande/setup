@@ -15,13 +15,13 @@ accordion layout by default, with a small part of adjacent windows kept visible.
 | 2 | Browsers (Firefox and Google Chrome) |
 | 3 | Communications and lightweight productivity (Slack, Spotify, TickTick) |
 | 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Bruno, Sublime Text) |
-| 5 | Terminals, development processes, and monitoring (WezTerm, Neovim, DBUI, tmux `processes`, btop, Lazydocker) |
+| 5 | Terminals, development processes, and monitoring (Ghostty, Neovim, DBUI, tmux `processes`, btop, Lazydocker) |
 | 6 | Steam |
 | 7–8 | Spare/manual workspaces |
 | 9 | Default destination for any app without an explicit routing rule |
 
 Apps are routed when AeroSpace detects a new window, including apps opened from
-Spotlight or the Dock. Every WezTerm window is routed to workspace 5, including
+Spotlight or the Dock. Every Ghostty window is routed to workspace 5, including
 windows opened outside an AeroSpace binding. System notification windows are
 exempt.
 
@@ -29,14 +29,14 @@ exempt.
 
 | Binding | Action |
 | ------- | ------ |
-| `Option-Q` | Open a new WezTerm window in workspace 5 |
+| `Option-Q` | Open a new Ghostty window in workspace 5 |
 | `Option-F` | Open `~/Documents` in Finder on workspace 4 |
 | `Option-B` | Open Firefox on workspace 2 |
 | `Option-I` | Open Spotify on workspace 3 |
-| `Option-N` | Open Neovim in WezTerm on workspace 5 |
-| `Option-T` | Open btop in WezTerm on workspace 5 |
-| `Option-D` | Open Lazydocker in WezTerm on workspace 5 |
-| `Option-S` | Open `nvim +DBUI` in WezTerm on workspace 5 |
+| `Option-N` | Open Neovim in Ghostty on workspace 5 |
+| `Option-T` | Open btop in Ghostty on workspace 5 |
+| `Option-D` | Open Lazydocker in Ghostty on workspace 5 |
+| `Option-S` | Open `nvim +DBUI` in Ghostty on workspace 5 |
 | `Option-G` | Open SourceTree on workspace 4 |
 | `Option-O` | Open Obsidian on workspace 4 |
 | `Option-P` | Open TickTick on workspace 3 |
@@ -101,11 +101,10 @@ the normal mode automatically.
 | `Down` / `Up` | Lower / raise system volume |
 | `Shift-Down` | Mute system volume and return to normal mode |
 
-### WezTerm
+### Ghostty
 
-WezTerm starts in `~/dev`, displays its tab bar even with one tab, and provides
-the standard `Command-T` binding for a new tab. `Command-W` closes the current
-tab without confirmation.
+Ghostty starts in `~/dev` and provides the standard `Command-T` binding for a
+new native tab. `Command-W` closes the current surface without confirmation.
 
 ### Bitwarden SSH agent
 

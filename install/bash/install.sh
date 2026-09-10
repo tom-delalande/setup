@@ -57,7 +57,7 @@ symlink_files() {
   symlink_file .config/fish fish
   symlink_file .config/lazygit lazygit
   symlink_file .config/starship.toml starship.toml
-  symlink_file .config/wezterm wezterm
+  symlink_file .config/ghostty ghostty
   symlink_file .config/aerospace aerospace
   symlink_file .ssh/config ssh/config
 }
