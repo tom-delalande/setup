@@ -1,0 +1,166 @@
+#!/usr/bin/env bash
+
+set -uo pipefail
+
+readonly SETUP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+export SETUP_ROOT
+
+# shellcheck source=../lib/setup/common.sh
+source "$SETUP_ROOT/lib/setup/common.sh"
+# shellcheck source=../lib/setup/managed-links.sh
+source "$SETUP_ROOT/lib/setup/managed-links.sh"
+
+failure_count=0
+warning_count=0
+
+pass_check() {
+  printf 'PASS  %s\n' "$*"
+}
+
+fail_check() {
+  printf 'FAIL  %s\n' "$*" >&2
+  failure_count=$((failure_count + 1))
+}
+
+warn_check() {
+  printf 'WARN  %s\n' "$*" >&2
+  warning_count=$((warning_count + 1))
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  printf 'Usage: setup-doctor [home|work]\n'
+  exit 0
+fi
+
+profile="${1:-}"
+profile_file="$HOME/.local/state/setup/profile"
+if [[ -z "$profile" && -f "$profile_file" ]]; then
+  profile="$(head -n 1 "$profile_file")"
+fi
+if [[ "$profile" != "home" && "$profile" != "work" ]]; then
+  printf 'Usage: setup-doctor [home|work]\n' >&2
+  printf 'Pass a profile explicitly if setup has not recorded one yet.\n' >&2
+  exit 2
+fi
+
+printf 'Checking the %s profile\n\n' "$profile"
+export SETUP_PROFILE="$profile"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  pass_check "Operating system is macOS"
+else
+  fail_check "Operating system is not macOS"
+fi
+
+doctor_link() {
+  local expected="$1"
+  local destination="$2"
+  local actual=""
+
+  if [[ -L "$destination" ]]; then
+    actual="$(readlink "$destination")"
+  fi
+
+  if [[ "$actual" == "$expected" ]]; then
+    pass_check "$destination"
+  else
+    fail_check "$destination is not linked to $expected"
+  fi
+}
+
+setup_each_managed_link doctor_link "$profile"
+
+brew_bin="$(brew_command 2>/dev/null || true)"
+if [[ -n "$brew_bin" ]]; then
+  pass_check "Homebrew is available at $brew_bin"
+  brew_directory="$(dirname "$brew_bin")"
+  case ":$PATH:" in
+    *":$brew_directory:"*)
+      pass_check "Homebrew is on PATH"
+      ;;
+    *)
+      fail_check "Homebrew is not on PATH"
+      ;;
+  esac
+
+  if "$brew_bin" bundle check --file "$SETUP_ROOT/packages/Brewfile.core" >/dev/null 2>&1; then
+    pass_check "Core packages are installed"
+  else
+    fail_check "Core packages are missing or outdated"
+  fi
+  if "$brew_bin" bundle check --file "$SETUP_ROOT/packages/Brewfile.$profile" >/dev/null 2>&1; then
+    pass_check "$profile packages are installed"
+  else
+    fail_check "$profile packages are missing or outdated"
+  fi
+else
+  fail_check "Homebrew is not installed"
+fi
+
+for command_name in git nvim trash zoxide aerospace mise; do
+  if command -v "$command_name" >/dev/null 2>&1; then
+    pass_check "$command_name is available"
+  else
+    fail_check "$command_name is missing from PATH"
+  fi
+done
+
+login_commands=(brew git nvim trash zoxide aerospace mise node)
+if [[ "$profile" == "work" ]]; then
+  login_commands+=(java gradle terraform)
+fi
+for command_name in "${login_commands[@]}"; do
+  if /bin/zsh -lic "command -v $command_name" >/dev/null 2>&1; then
+    pass_check "$command_name is available in a fresh login shell"
+  else
+    fail_check "$command_name is missing from a fresh login shell"
+  fi
+done
+
+if command -v mise >/dev/null 2>&1; then
+  mise_config="$SETUP_ROOT/config/mise/$profile.toml"
+  if missing_tools="$(MISE_GLOBAL_CONFIG_FILE="$mise_config" mise ls --missing --no-header 2>/dev/null)"; then
+    if [[ -z "$missing_tools" ]]; then
+      pass_check "Mise tools are installed"
+    else
+      fail_check "Mise tools are missing: $missing_tools"
+    fi
+  else
+    fail_check "Mise could not read $mise_config"
+  fi
+fi
+
+git_excludes="$(git config --global --get core.excludesfile 2>/dev/null || true)"
+if [[ "$git_excludes" == "~/.config/git/ignore" || "$git_excludes" == "$HOME/.config/git/ignore" ]]; then
+  pass_check "Git global ignore is configured"
+else
+  fail_check "Git core.excludesfile does not use ~/.config/git/ignore"
+fi
+
+case "${SHELL:-}" in
+  */zsh)
+    pass_check "Login shell is $SHELL"
+    ;;
+  *)
+    warn_check "Login shell is ${SHELL:-unknown}; expected Zsh"
+    ;;
+esac
+
+if [[ -S "$HOME/.bitwarden-ssh-agent.sock" ]]; then
+  pass_check "Bitwarden SSH agent socket is available"
+else
+  warn_check "Bitwarden SSH agent is not enabled"
+fi
+
+if command -v nvim >/dev/null 2>&1; then
+  if nvim --headless '+qa' >/dev/null 2>&1; then
+    pass_check "Neovim starts headlessly"
+  else
+    fail_check "Neovim failed its headless startup check"
+  fi
+fi
+
+printf '\nManual checks: Accessibility permissions, App Store and application sign-ins, browser sync, and Docker startup.\n'
+printf 'Result: %s failure(s), %s warning(s).\n' "$failure_count" "$warning_count"
+
+[[ "$failure_count" -eq 0 ]]

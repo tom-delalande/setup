@@ -1,0 +1,41 @@
+name: setup-ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install validation tools
+        run: brew install lua shellcheck shfmt
+
+      - name: Check shell scripts
+        run: |
+          shellcheck bootstrap.sh bin/setup bin/setup-doctor config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
+          shfmt -d -i 2 -ci bootstrap.sh bin/setup bin/setup-doctor config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
+
+      - name: Check package manifests
+        run: |
+          ruby -c packages/Brewfile.core
+          ruby -c packages/Brewfile.home
+          ruby -c packages/Brewfile.work
+
+      - name: Check TOML and Lua
+        run: |
+          python3 -c 'import pathlib,tomllib; [tomllib.loads(p.read_text()) for p in pathlib.Path("config").rglob("*.toml")]'
+          find config/nvim -name '*.lua' -exec luac -p {} +
+
+      - name: Run setup tests
+        run: tests/setup_test.sh
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2

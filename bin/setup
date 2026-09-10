@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+readonly SETUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export SETUP_ROOT
+
+# shellcheck source=../lib/setup/common.sh
+source "$SETUP_ROOT/lib/setup/common.sh"
+
+usage() {
+  cat <<'USAGE'
+Usage: bin/setup <home|work> [options]
+
+Options:
+  --dry-run             Print commands without changing the machine
+  --only PHASES         Run comma-separated phases only
+  --skip PHASES         Skip comma-separated phases
+  --include-opinionated Apply aggressive preferences such as clearing the Dock
+  -h, --help            Show this help
+
+Phases: preflight, homebrew, packages, dotfiles, macos, postflight
+USAGE
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+export SETUP_PROFILE="${1:-}"
+if [[ "$SETUP_PROFILE" != "home" && "$SETUP_PROFILE" != "work" ]]; then
+  usage >&2
+  exit 2
+fi
+shift
+
+export SETUP_DRY_RUN=0
+export SETUP_ONLY=""
+export SETUP_SKIP=""
+export SETUP_OPINIONATED=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      SETUP_DRY_RUN=1
+      ;;
+    --only)
+      [[ $# -ge 2 ]] || die "--only requires a value"
+      SETUP_ONLY="$2"
+      shift
+      ;;
+    --skip)
+      [[ $# -ge 2 ]] || die "--skip requires a value"
+      SETUP_SKIP="$2"
+      shift
+      ;;
+    --include-opinionated)
+      SETUP_OPINIONATED=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      die "unknown option: $1"
+      ;;
+  esac
+  shift
+done
+
+[[ -z "$SETUP_ONLY" ]] || validate_phase_list "--only" "$SETUP_ONLY"
+[[ -z "$SETUP_SKIP" ]] || validate_phase_list "--skip" "$SETUP_SKIP"
+
+SETUP_CURRENT_PHASE="startup"
+setup_error() {
+  local status=$?
+  printf 'error: setup failed during the %s phase (exit %s)\n' "$SETUP_CURRENT_PHASE" "$status" >&2
+  exit "$status"
+}
+trap setup_error ERR
+
+readonly SETUP_PHASES="preflight homebrew packages dotfiles macos postflight"
+for phase in $SETUP_PHASES; do
+  if phase_selected "$phase"; then
+    SETUP_CURRENT_PHASE="$phase"
+    # shellcheck source=/dev/null
+    source "$SETUP_ROOT/lib/setup/phases/$phase.sh"
+    "setup_phase_$phase"
+  fi
+done
+
+trap - ERR
+
+log "Setup completed for the $SETUP_PROFILE profile"

@@ -1,5 +1,62 @@
+# macOS setup
 
-# Instructions
+This repository configures a new home or work Mac while keeping the shared
+Zsh, editor, terminal, Git, and AeroSpace configuration identical.
+
+Run one of these commands on a new Mac:
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tom-delalande/setup/main/bootstrap.sh)" -- home --include-opinionated
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/tom-delalande/setup/main/bootstrap.sh)" -- work --include-opinionated
+```
+
+The bootstrap installs Apple's Command Line Tools and Homebrew when necessary,
+clones this repository to `~/setup`, and runs the selected profile. If macOS
+starts the interactive Command Line Tools installer, the command waits and
+continues automatically after installation finishes.
+
+To update an existing machine or preview changes:
+
+```sh
+~/setup/bin/setup home
+~/setup/bin/setup work --dry-run
+~/setup/bin/setup work --only packages,dotfiles
+~/setup/bin/setup-doctor
+```
+
+AeroSpace is distributed through its publisher's Homebrew tap. Its cask is
+trusted explicitly in the Brewfile; the setup never trusts the entire tap.
+
+Core packages live in `packages/Brewfile.core`. Profile-specific applications
+live in `packages/Brewfile.home` and `packages/Brewfile.work`. Existing
+dotfiles are backed up below `~/.local/state/setup/backups` before replacement.
+
+Mise installs and switches developer runtimes. Both profiles use Node 26; the
+work profile also uses OpenJDK 25, Gradle 9, and Terraform 1. Project-level
+`mise.toml` files can override these global defaults automatically.
+
+The default macOS phase preserves existing Dock applications and tracking
+speeds. To apply the complete opinionated configuration, including clearing the
+Dock and using the fast mouse and trackpad speeds:
+
+```sh
+~/setup/bin/setup home --include-opinionated
+```
+
+The setup command supports comma-separated `--only` and `--skip` phase
+lists. Run `~/setup/bin/setup --help` for the complete interface. After setup,
+`setup-doctor` runs automatically at the end and verifies packages, managed
+links, Mise tools, PATH in a fresh login shell, Git, the Bitwarden SSH agent,
+and Neovim. It exits unsuccessfully when required configuration is missing,
+making it suitable for troubleshooting and CI.
+
+If setup replaces an existing dotfile, recover it from the newest directory
+under `~/.local/state/setup/backups`. Package removal is intentionally not
+automatic; Homebrew software outside these manifests is left untouched.
+
+Some setup remains interactive: macOS may request Accessibility permissions,
+the App Store and applications require sign-in, Bitwarden's SSH agent must be
+enabled, and browsers need their account sync configured.
 
 ## macOS window workflow
 
@@ -14,8 +71,8 @@ accordion layout by default, with a small part of adjacent windows kept visible.
 | 1 | LLM harness (ChatGPT/Codex, Claude, and OpenCode) |
 | 2 | Browsers (Firefox and Google Chrome) |
 | 3 | Communications and lightweight productivity (Slack, Spotify, TickTick) |
-| 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Bruno, Sublime Text) |
-| 5 | Terminals, development processes, and monitoring (Ghostty, Neovim, DBUI, tmux `processes`, btop, Lazydocker) |
+| 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Bruno, Zed) |
+| 5 | Terminals, development processes, and monitoring (Ghostty, Neovim, DBUI) |
 | 6 | Steam |
 | 7–8 | Spare/manual workspaces |
 | 9 | Default destination for any app without an explicit routing rule |
@@ -34,8 +91,6 @@ exempt.
 | `Option-B` | Open Firefox on workspace 2 |
 | `Option-I` | Open Spotify on workspace 3 |
 | `Option-N` | Open Neovim in Ghostty on workspace 5 |
-| `Option-T` | Open btop in Ghostty on workspace 5 |
-| `Option-D` | Open Lazydocker in Ghostty on workspace 5 |
 | `Option-S` | Open `nvim +DBUI` in Ghostty on workspace 5 |
 | `Option-G` | Open SourceTree on workspace 4 |
 | `Option-O` | Open Obsidian on workspace 4 |
@@ -52,11 +107,9 @@ exempt.
 | `Option-Control-D` | Open Google Meet in Chrome on workspace 2 |
 | `Option-Control-M` | Open Slack on workspace 3 |
 | `Option-Control-N` | Open IntelliJ IDEA on workspace 4 |
-| `Option-Control-T` | Open or attach to the tmux session `processes` on workspace 5 |
 
-The macOS Shortcuts **Open Workbench Terminal**, **Open SourceTree**, and
-**Open Processes Terminal** invoke `Option-Q`, `Option-G`, and
-`Option-Control-T` respectively and are searchable from Spotlight.
+The macOS Shortcuts **Open Workbench Terminal** and **Open SourceTree** invoke
+`Option-Q` and `Option-G` respectively and are searchable from Spotlight.
 
 ### AeroSpace window and layout shortcuts
 
@@ -116,66 +169,11 @@ Enable **SSH agent** in Bitwarden's settings and select **System Git** in
 SourceTree under **Settings → Git**. Repositories must use SSH remote URLs, such
 as `git@github.com:owner/repository.git`, rather than HTTPS URLs.
 
-The Bash installer links the configuration to `~/.ssh/config`; the Ansible
-`ssh` task installs the same file. Private keys are not copied from this
-repository because Bitwarden manages them. Verify the agent with:
+The setup tool links the configuration to `~/.ssh/config`. Private keys are
+not copied from this repository because Bitwarden manages them. Verify the
+agent with:
 
 ```sh
 SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock" ssh-add -L
 ssh -T git@github.com
-```
-
-## Ansible
-
-1. Upgrade pip
-```sh
-sudo pip3 install --upgrade pip
-export PATH="$HOME/Library/Python/3.8/bin:"$PATH
-```
-
-2. Install Ansible
-```sh
-pip3 install ansible
-```
-
-3. Run Ansible
-```sh
-cd install/ansible
-ansible-galaxy install -r requirements.yml
-ansible-playbook main.yml --ask-become-pass --ask-vault-pass
-
-// Or work
-ansible-playbook main.yml --ask-become-pass --ask-vault-pass -l work
-
-// Or specific tags
-ansible-playbook main.yml --ask-become-pass --ask-vault-pass --tags brew nvim ssh dotfiles osx
-```
-
-I don't think I should need to run this but I'm leaving it here incase
-```
-sudo chown -R "$USER":admin /usr/local
-```
-
-## Nix
-
-### OS
-1. New Partition Table: GPT
-
-| Name     | Size    | File System    | Mount Point | Flags     |
-| -------- | ------- | -------------- | ----------- | --------- |
-| Boot     | 100MB   | FAT32          | /boot       | boot      |
-| Grub     | 8MB     | unformatted    | *None*      | bios-grub |
-| Swap     | 8GB     | linuxswap      | *None*      | swap    |
-| Root     | *       | ext4           | /           | root
-
-2. Install Boot Loader on /boot
-
-My Nix configuration is based off https://github.com/Misterio77/nix-starter-configs and takes inspiration from https://github.com/vasujain275/rudra.
-
-```sh
-nix-shell -p git neovim
-git clone https://github.com/tom-delalande/setup.git ~/setup
-cd ~/setup/install/nix
-nixos-generate-config --show-hardware-config > nixos/hardware-configuration.nix
-sudo nixos-rebuild switch --flake .#nixos
 ```

@@ -1,0 +1,7 @@
+# Applications and system services used on a work Mac. Developer runtimes are
+# managed by Mise in config/mise/work.toml.
+brew "postgresql@17"
+
+cask "intellij-idea"
+cask "slack"
+cask "claude-code"
