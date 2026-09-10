@@ -11,10 +11,10 @@ accordion layout by default, with a small part of adjacent windows kept visible.
 
 | Workspace | Purpose |
 | --------- | ------- |
-| 1 | LLM harness (ChatGPT/Codex) |
+| 1 | LLM harness (ChatGPT/Codex, Claude, and OpenCode) |
 | 2 | Browsers (Firefox and Google Chrome) |
 | 3 | Communications and lightweight productivity (Slack, Spotify, TickTick) |
-| 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Sublime Text, temporary terminals, Neovim, DBUI) |
+| 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Bruno, Sublime Text, temporary terminals, Neovim, DBUI) |
 | 5 | Long-running processes and monitoring (tmux `processes`, btop, Lazydocker) |
 | 6 | Steam |
 | 7–8 | Spare/manual workspaces |

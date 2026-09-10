@@ -61,6 +61,8 @@ automatically-unhide-macos-hidden-apps = false
 # they are launched from Spotlight, the Dock, or a keyboard binding.
 on-window-detected = [
     { if = 'test %{app-bundle-id} = com.openai.codex', run = 'move-node-to-workspace 1' },
+    { if = 'test %{app-bundle-id} = com.anthropic.claudefordesktop', run = 'move-node-to-workspace 1' },
+    { if = 'test %{app-bundle-id} = ai.opencode.desktop', run = 'move-node-to-workspace 1' },
     { if = 'test %{app-bundle-id} = org.mozilla.firefox', run = 'move-node-to-workspace 2' },
     { if = 'test %{app-bundle-id} = com.google.Chrome', run = 'move-node-to-workspace 2' },
     { if = 'test %{app-bundle-id} = com.tinyspeck.slackmacgap', run = 'move-node-to-workspace 3' },
@@ -75,6 +77,7 @@ on-window-detected = [
     { if = 'test %{app-bundle-id} = com.bitwarden.desktop', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.torusknot.SourceTreeNotMAS', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.TablePro', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.usebruno.app', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.sublimetext.4', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.valvesoftware.steam', run = 'move-node-to-workspace 6' },
     # Terminal shortcuts choose their workspace before launching WezTerm.
