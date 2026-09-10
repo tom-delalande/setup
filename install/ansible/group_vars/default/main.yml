@@ -7,7 +7,7 @@ dotfiles_files:
   - config/fish
   - config/lazygit
   - config/starship.toml
-  - config/wezterm
+  - config/ghostty
   - config/aerospace
   - zshrc
 

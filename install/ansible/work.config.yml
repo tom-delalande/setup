@@ -11,7 +11,7 @@ dotfiles_files:
   - config/fish
   - config/lazygit
   - config/starship.toml
-  - config/wezterm
+  - config/ghostty
   - zshrc
 
 homebrew_file: "{{ work_src_directory }}/Brewfile.rb"
