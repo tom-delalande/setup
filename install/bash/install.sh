@@ -32,10 +32,12 @@ install_dependencies() {
 create_dirs() {
   dirs=(
     ~/.config
+    ~/.ssh
     ~/dev
   )
 
   for name in "${dirs[@]}"; do mkdir -p "${name}"; done
+  chmod 700 "$HOME/.ssh"
 }
 
 symlink_file() {
@@ -57,6 +59,7 @@ symlink_files() {
   symlink_file .config/starship.toml starship.toml
   symlink_file .config/wezterm wezterm
   symlink_file .config/aerospace aerospace
+  symlink_file .ssh/config ssh/config
 }
 
 fonts=(
