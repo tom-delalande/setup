@@ -15,7 +15,7 @@ return {
         },
         builder = function(params)
           return {
-            cmd = { files.join(dir .. "/scripts/", filename) },
+            cmd = { vim.fs.joinpath(dir .. "/scripts/", filename) },
             args = params.args,
           }
         end,

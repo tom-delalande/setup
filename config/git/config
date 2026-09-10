@@ -8,6 +8,8 @@
 
 [core]
     editor = nvim
+	autocrlf = input
+	excludesfile = /Users/thomas-delalande/.gitignore_global
 
 [push]
     autoSetupRemote = true
@@ -22,3 +24,9 @@
     default = current
 [init]
 	defaultBranch = main
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
