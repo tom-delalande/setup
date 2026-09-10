@@ -70,6 +70,12 @@ doctor_link() {
 
 setup_each_managed_link doctor_link "$profile"
 
+if [[ -r "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
+  pass_check "Oh My Zsh is installed"
+else
+  fail_check "Oh My Zsh is not installed at $HOME/.oh-my-zsh"
+fi
+
 brew_bin="$(brew_command 2>/dev/null || true)"
 if [[ -n "$brew_bin" ]]; then
   pass_check "Homebrew is available at $brew_bin"

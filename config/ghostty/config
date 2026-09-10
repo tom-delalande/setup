@@ -1,6 +1,2 @@
-font-family = JetBrains Mono
-font-size = 18
-theme = catppuccin-frappe.conf
 working-directory = ~/dev
-window-padding-x = 10
 confirm-close-surface = false
