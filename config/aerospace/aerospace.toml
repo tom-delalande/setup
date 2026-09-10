@@ -1,6 +1,9 @@
 # Place a copy of this config to ~/.aerospace.toml
 # After that, you can edit ~/.aerospace.toml to your liking
 
+config-version = 2
+persistent-workspaces = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
 # Available commands: https://nikitabobko.github.io/AeroSpace/commands
@@ -9,10 +12,20 @@ after-login-command = []
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = []
+after-startup-command = [
+    # 1: LLM harness, 2: browsers, 3: communications,
+    # 4: transient workbench, 5: processes, 6: games, 9: catch-all.
+    'layout --workspace 1 --root h_accordion',
+    'layout --workspace 2 --root h_accordion',
+    'layout --workspace 3 --root h_accordion',
+    'layout --workspace 4 --root h_accordion',
+    'layout --workspace 5 --root h_accordion',
+    'layout --workspace 6 --root h_accordion',
+    'layout --workspace 9 --root h_accordion',
+]
 
 # Start AeroSpace at login
-start-at-login = false
+start-at-login = true
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
@@ -23,8 +36,9 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 # You can set 0 to disable the padding feature
 accordion-padding = 30
 
-# Possible values: tiles|accordion
-default-root-container-layout = 'tiles'
+# Most workspaces are full-screen stacks. Use alt-period when you deliberately
+# want to tile the current workspace.
+default-root-container-layout = 'accordion'
 
 # Possible values: horizontal|vertical|auto
 # 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
@@ -42,6 +56,41 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
 # Also see: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
 automatically-unhide-macos-hidden-apps = false
+
+# Keep long-lived applications in predictable workspaces, regardless of whether
+# they are launched from Spotlight, the Dock, or a keyboard binding.
+on-window-detected = [
+    { if = 'test %{app-bundle-id} = com.openai.codex', run = 'move-node-to-workspace 1' },
+    { if = 'test %{app-bundle-id} = org.mozilla.firefox', run = 'move-node-to-workspace 2' },
+    { if = 'test %{app-bundle-id} = com.google.Chrome', run = 'move-node-to-workspace 2' },
+    { if = 'test %{app-bundle-id} = com.tinyspeck.slackmacgap', run = 'move-node-to-workspace 3' },
+    { if = 'test %{app-bundle-id} = com.spotify.client', run = 'move-node-to-workspace 3' },
+    { if = 'test %{app-bundle-id} = com.TickTick.task.mac', run = 'move-node-to-workspace 3' },
+    { if = 'test %{app-bundle-id} = com.apple.finder', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.jetbrains.intellij', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.seriflabs.affinityphoto', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.seriflabs.affinitydesigner2', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.canva.affinity', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = md.obsidian', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.bitwarden.desktop', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.torusknot.SourceTreeNotMAS', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.TablePro', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.sublimetext.4', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = com.valvesoftware.steam', run = 'move-node-to-workspace 6' },
+    # Terminal shortcuts choose their workspace before launching WezTerm.
+    { if = 'test %{app-bundle-id} = com.github.wez.wezterm', run = 'true' },
+    # Do not move notification banners into a workspace.
+    { if = 'test %{app-bundle-id} = com.apple.UserNotificationCenter', run = 'true' },
+    { if = 'true', run = 'move-node-to-workspace 9' },
+]
+
+# AeroSpace is launched as a GUI app, so provide the paths used by its
+# application and terminal shortcuts explicitly.
+[exec]
+inherit-env-vars = true
+
+[exec.env-vars]
+PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
 
 
 ### CUSTOM
@@ -101,26 +150,29 @@ outer.right =      0
 # '''
 
 ### CUSTOM
-alt-shift-enter = 'fullscreen'
+alt-shift-enter = 'fullscreen --no-outer-gaps'
 
 alt-w = 'close'
-alt-q = ['workspace 1', 'exec-and-forget wezterm']
-alt-f = ['workspace 1', 'exec-and-forget open ~/Documents']
+alt-q = ['workspace 4', 'exec-and-forget /usr/bin/open -na /Applications/WezTerm.app --args start --always-new-process']
+alt-f = ['workspace 4', 'exec-and-forget open ~/Documents']
 alt-b = ['workspace 2', 'exec-and-forget firefox']
-alt-i = ['workspace 5', 'exec-and-forget open -a "Spotify"']
-alt-n = ['workspace 3', 'exec-and-forget wezterm -e nvim']
-alt-t = ['workspace 1', 'exec-and-forget wezterm -e btop']
-alt-d = ['workspace 3', 'exec-and-forget wezterm -e lazydocker']
-alt-s = ['workspace 3', 'exec-and-forget wezterm -e nvim +DBUI']
-alt-g = ['workspace 3', 'exec-and-forget wezterm -e lazygit']
-alt-o = ['workspace 5', 'exec-and-forget open -a "Obsidian"']
-alt-p = ['workspace 4', 'exec-and-forget open -a "TickTick"']
-alt-z = ['workspace 2', 'exec-and-forget open -a "Bitwarden"']
+alt-i = ['workspace 3', 'exec-and-forget open -a "Spotify"']
+alt-n = ['workspace 4', 'exec-and-forget /usr/bin/open -na /Applications/WezTerm.app --args start --always-new-process -- /opt/homebrew/bin/nvim']
+alt-t = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/WezTerm.app --args start --always-new-process -- /opt/homebrew/bin/btop']
+alt-d = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/WezTerm.app --args start --always-new-process -- /opt/homebrew/bin/lazydocker']
+alt-s = ['workspace 4', 'exec-and-forget /usr/bin/open -na /Applications/WezTerm.app --args start --always-new-process -- /opt/homebrew/bin/nvim +DBUI']
+alt-g = ['workspace 4', 'exec-and-forget /usr/bin/open -a "Sourcetree"']
+alt-o = ['workspace 4', 'exec-and-forget open -a "Obsidian"']
+alt-p = ['workspace 3', 'exec-and-forget open -a "TickTick"']
+alt-z = ['workspace 4', 'exec-and-forget open -a "Bitwarden"']
+
+# A persistent process terminal. This binding can also be invoked by a macOS
+# Shortcut with: aerospace trigger-binding --mode main alt-ctrl-t
+alt-ctrl-t = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/WezTerm.app --args start --always-new-process -- /opt/homebrew/bin/tmux new-session -A -s processes']
 
 alt-a = ['workspace 2', 'exec-and-forget firefox --new-tab="https://chatgpt.com"']
 alt-c = ['workspace 2', 'exec-and-forget firefox --new-tab="https://calendar.google.com"']
 alt-e = ['workspace 2', 'exec-and-forget firefox --new-tab="https://mail.google.com"']
-alt-y = ['workspace 2', 'exec-and-forget firefox --new-tab="https://youtube.com/"']
 alt-m = ['workspace 2', 'exec-and-forget firefox --new-tab="https://messages.google.com/web/conversations"']
 
 # Work
@@ -129,10 +181,14 @@ alt-ctrl-a = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://c
 alt-ctrl-c = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://calendar.google.com"']
 alt-ctrl-e = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://main.google.com"']
 alt-ctrl-d = ['workspace 2', 'exec-and-forget open -a "Google Chrome" "https://meet.google.com"']
-alt-ctrl-m = ['workspace 4', 'exec-and-forget open /Applications/Slack.app']
-alt-ctrl-n = ['workspace 3', 'exec-and-forget open "/Applications/IntelliJ IDEA CE.app"']
+alt-ctrl-m = ['workspace 3', 'exec-and-forget open -a "Slack"']
+alt-ctrl-n = ['workspace 4', 'exec-and-forget open -a "IntelliJ IDEA"']
 
 alt-v = ['layout floating tiling']
+
+# Cycle through full-screen stacked windows on the current workspace.
+alt-backtick = 'focus --wrap-around dfs-next'
+alt-shift-backtick = 'focus --wrap-around dfs-prev'
 
 ### END CUSTOM
 
