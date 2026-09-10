@@ -2,12 +2,15 @@
 
 set -uo pipefail
 
-readonly SETUP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SETUP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+readonly SETUP_ROOT
 export SETUP_ROOT
 
 # shellcheck source=../lib/setup/common.sh
+# shellcheck disable=SC1091
 source "$SETUP_ROOT/lib/setup/common.sh"
 # shellcheck source=../lib/setup/managed-links.sh
+# shellcheck disable=SC1091
 source "$SETUP_ROOT/lib/setup/managed-links.sh"
 
 failure_count=0

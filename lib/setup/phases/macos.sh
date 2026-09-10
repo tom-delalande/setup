@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 setup_phase_macos() {
   log "macOS preferences"
 

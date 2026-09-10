@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 setup_phase_postflight() {
   log "Postflight checks"
 

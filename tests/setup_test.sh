@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2030,SC2031
 
 set -euo pipefail
 
-readonly TEST_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+TEST_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+readonly TEST_ROOT
 test_home="$(mktemp -d)"
 test_bin="$(mktemp -d)"
 bootstrap_checkout="$(mktemp -d)"
@@ -14,14 +16,16 @@ fail() {
   exit 1
 }
 
-oh_my_zsh_dry_run="$({
+oh_my_zsh_output="$oh_my_zsh_home/output"
+(
   export HOME="$oh_my_zsh_home"
   export SETUP_DRY_RUN=1
   export SETUP_ROOT="$TEST_ROOT"
   source "$TEST_ROOT/lib/setup/common.sh"
   source "$TEST_ROOT/lib/setup/phases/packages.sh"
   setup_oh_my_zsh
-})"
+) >"$oh_my_zsh_output"
+oh_my_zsh_dry_run="$(<"$oh_my_zsh_output")"
 printf '%s\n' "$oh_my_zsh_dry_run" | grep -q 'github.com/ohmyzsh/ohmyzsh.git' ||
   fail "Oh My Zsh clone was missing from a clean dry run"
 

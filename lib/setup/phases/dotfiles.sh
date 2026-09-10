@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 setup_link() {
   local source_path="$1"
   local destination_path="$2"
@@ -31,12 +33,14 @@ setup_remove_obsolete_link() {
 setup_phase_dotfiles() {
   log "Dotfiles"
 
-  export SETUP_BACKUP_DIRECTORY="$HOME/.local/state/setup/backups/$(date +%Y%m%d-%H%M%S)"
+  SETUP_BACKUP_DIRECTORY="$HOME/.local/state/setup/backups/$(date +%Y%m%d-%H%M%S)"
+  export SETUP_BACKUP_DIRECTORY
   setup_remove_obsolete_link "$SETUP_ROOT/config/fish" "$HOME/.config/fish"
   setup_remove_obsolete_link "$SETUP_ROOT/config/starship.toml" "$HOME/.config/starship.toml"
   setup_remove_obsolete_link "$SETUP_ROOT/config/tmux" "$HOME/.config/tmux"
 
   # shellcheck source=../managed-links.sh
+  # shellcheck disable=SC1091
   source "$SETUP_ROOT/lib/setup/managed-links.sh"
   setup_each_managed_link setup_link "$SETUP_PROFILE"
 }
