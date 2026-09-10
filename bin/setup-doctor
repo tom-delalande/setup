@@ -14,16 +14,16 @@ failure_count=0
 warning_count=0
 
 pass_check() {
-  printf 'PASS  %s\n' "$*"
+  printf '%sPASS%s  %s\n' "$COLOR_GREEN" "$COLOR_RESET" "$*"
 }
 
 fail_check() {
-  printf 'FAIL  %s\n' "$*" >&2
+  printf '%sFAIL%s  %s\n' "$COLOR_RED" "$COLOR_RESET" "$*" >&2
   failure_count=$((failure_count + 1))
 }
 
 warn_check() {
-  printf 'WARN  %s\n' "$*" >&2
+  printf '%sWARN%s  %s\n' "$COLOR_YELLOW" "$COLOR_RESET" "$*" >&2
   warning_count=$((warning_count + 1))
 }
 
@@ -43,7 +43,7 @@ if [[ "$profile" != "home" && "$profile" != "work" ]]; then
   exit 2
 fi
 
-printf 'Checking the %s profile\n\n' "$profile"
+printf '%sChecking the %s profile%s\n\n' "$COLOR_BOLD$COLOR_CYAN" "$profile" "$COLOR_RESET"
 export SETUP_PROFILE="$profile"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -167,6 +167,10 @@ if command -v nvim >/dev/null 2>&1; then
 fi
 
 printf '\nManual checks: Accessibility permissions, App Store and application sign-ins, browser sync, and Docker startup.\n'
-printf 'Result: %s failure(s), %s warning(s).\n' "$failure_count" "$warning_count"
+if [[ "$failure_count" -eq 0 ]]; then
+  printf '%sResult: %sPASS%s — %s failure(s), %s warning(s).\n' "$COLOR_GREEN" "$COLOR_BOLD" "$COLOR_RESET" "$failure_count" "$warning_count"
+else
+  printf '%sResult: %sFAIL%s — %s failure(s), %s warning(s).\n' "$COLOR_RED" "$COLOR_BOLD" "$COLOR_RESET" "$failure_count" "$warning_count"
+fi
 
 [[ "$failure_count" -eq 0 ]]
