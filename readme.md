@@ -51,7 +51,8 @@ lists. Run `~/setup/bin/setup --help` for the complete interface. After setup,
 `setup-doctor` runs automatically at the end and verifies packages, managed
 links, Mise tools, PATH in a fresh login shell, Git, the Bitwarden SSH agent,
 and Neovim. It exits unsuccessfully when required configuration is missing,
-making it suitable for troubleshooting and CI.
+making it suitable for troubleshooting and CI. Interactive terminals show
+colored status; set `NO_COLOR=1` to force plain output.
 
 If setup replaces an existing dotfile, recover it from the newest directory
 under `~/.local/state/setup/backups`. Package removal is intentionally not

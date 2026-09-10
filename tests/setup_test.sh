@@ -94,7 +94,7 @@ fi
 "$TEST_ROOT/bin/setup-doctor" --help >/dev/null || fail "doctor help failed"
 
 postflight="$("$TEST_ROOT/bin/setup" home --only postflight)"
-printf '%s\n' "$postflight" | grep -q 'Result: 0 failure(s)' ||
+printf '%s\n' "$postflight" | grep -q 'PASS.*0 failure(s)' ||
   fail "postflight did not run setup-doctor successfully"
 
 for command_name in java gradle terraform; do

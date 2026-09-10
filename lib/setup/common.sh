@@ -1,15 +1,31 @@
 #!/usr/bin/env bash
 
+if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
+  readonly COLOR_RESET=$'\033[0m'
+  readonly COLOR_BOLD=$'\033[1m'
+  readonly COLOR_CYAN=$'\033[36m'
+  readonly COLOR_GREEN=$'\033[32m'
+  readonly COLOR_YELLOW=$'\033[33m'
+  readonly COLOR_RED=$'\033[31m'
+else
+  readonly COLOR_RESET=''
+  readonly COLOR_BOLD=''
+  readonly COLOR_CYAN=''
+  readonly COLOR_GREEN=''
+  readonly COLOR_YELLOW=''
+  readonly COLOR_RED=''
+fi
+
 log() {
-  printf '\n==> %s\n' "$*"
+  printf '\n%s==> %s%s\n' "$COLOR_BOLD$COLOR_CYAN" "$*" "$COLOR_RESET"
 }
 
 warn() {
-  printf 'warning: %s\n' "$*" >&2
+  printf '%swarning:%s %s\n' "$COLOR_YELLOW" "$COLOR_RESET" "$*" >&2
 }
 
 die() {
-  printf 'error: %s\n' "$*" >&2
+  printf '%serror:%s %s\n' "$COLOR_RED" "$COLOR_RESET" "$*" >&2
   exit 1
 }
 
