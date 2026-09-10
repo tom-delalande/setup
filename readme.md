@@ -1,7 +1,7 @@
 # macOS setup
 
 This repository configures a new home or work Mac while keeping the shared
-Zsh, editor, terminal, Git, and AeroSpace configuration identical.
+Oh My Zsh, editor, terminal, Git, and AeroSpace configuration identical.
 
 Run one of these commands on a new Mac:
 
@@ -34,6 +34,9 @@ dotfiles are backed up below `~/.local/state/setup/backups` before replacement.
 Mise installs and switches developer runtimes. Both profiles use Node 26; the
 work profile also uses OpenJDK 25, Gradle 9, and Terraform 1. Project-level
 `mise.toml` files can override these global defaults automatically.
+
+Oh My Zsh is installed non-interactively in `~/.oh-my-zsh` and loaded from the
+managed Zsh configuration with the `robbyrussell` theme and Git plugin.
 
 The default macOS phase preserves existing Dock applications and tracking
 speeds. To apply the complete opinionated configuration, including clearing the

@@ -6,12 +6,24 @@ readonly TEST_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 test_home="$(mktemp -d)"
 test_bin="$(mktemp -d)"
 bootstrap_checkout="$(mktemp -d)"
-trap 'rm -rf "$test_home" "$test_bin" "$bootstrap_checkout"' EXIT
+oh_my_zsh_home="$(mktemp -d)"
+trap 'rm -rf "$test_home" "$test_bin" "$bootstrap_checkout" "$oh_my_zsh_home"' EXIT
 
 fail() {
   printf 'FAIL: %s\n' "$*" >&2
   exit 1
 }
+
+oh_my_zsh_dry_run="$({
+  export HOME="$oh_my_zsh_home"
+  export SETUP_DRY_RUN=1
+  export SETUP_ROOT="$TEST_ROOT"
+  source "$TEST_ROOT/lib/setup/common.sh"
+  source "$TEST_ROOT/lib/setup/phases/packages.sh"
+  setup_oh_my_zsh
+})"
+printf '%s\n' "$oh_my_zsh_dry_run" | grep -q 'github.com/ohmyzsh/ohmyzsh.git' ||
+  fail "Oh My Zsh clone was missing from a clean dry run"
 
 cat >"$test_bin/brew" <<'BREW'
 #!/usr/bin/env bash
@@ -46,6 +58,10 @@ done
 for command_name in nvim trash zoxide aerospace mise node; do
   ln -s /usr/bin/true "$test_bin/$command_name"
 done
+mkdir -p "$HOME/.oh-my-zsh"
+git -C "$HOME/.oh-my-zsh" init -q
+git -C "$HOME/.oh-my-zsh" remote add origin https://github.com/ohmyzsh/ohmyzsh.git
+printf '# test Oh My Zsh init\n' >"$HOME/.oh-my-zsh/oh-my-zsh.sh"
 "$TEST_ROOT/bin/setup-doctor" home >/dev/null ||
   fail "doctor rejected a correctly linked test home"
 
@@ -59,6 +75,8 @@ printf '%s\n' "$home_packages" | grep -q 'Brewfile.home' ||
   fail "home profile did not select Brewfile.home"
 printf '%s\n' "$home_packages" | grep -q 'config/mise/home.toml' ||
   fail "home profile did not select its Mise configuration"
+printf '%s\n' "$home_packages" | grep -q 'Oh My Zsh is installed' ||
+  fail "package setup did not check Oh My Zsh"
 if printf '%s\n' "$home_packages" | grep -q 'Brewfile.work'; then
   fail "home profile selected Brewfile.work"
 fi

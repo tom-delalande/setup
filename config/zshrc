@@ -8,12 +8,21 @@ fi
 # OpenSpec shell completions configuration
 if [[ -d "$HOME/.zsh/completions" ]]; then
   fpath=("$HOME/.zsh/completions" $fpath)
-  autoload -Uz compinit
-  compinit
 fi
 # OPENSPEC:END
 
 export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
+
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
+plugins=(git)
+
+if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
+  source "$ZSH/oh-my-zsh.sh"
+elif [[ -d "$HOME/.zsh/completions" ]]; then
+  autoload -Uz compinit
+  compinit
+fi
 
 if command -v mise >/dev/null 2>&1; then
   eval "$(mise activate zsh)"
