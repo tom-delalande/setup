@@ -1,0 +1,30 @@
+# Copy this file to ~/.config/setup/backup.conf and replace the volume names.
+# This file contains paths only. The restic password is stored in macOS Keychain.
+
+# Both disks must be connected for a backup. Keeping them disconnected between
+# runs protects the snapshots from accidental deletion and ransomware.
+BACKUP_REPOSITORIES=(
+  "/Volumes/Photos Backup A/restic"
+  "/Volumes/Photos Backup B/restic"
+)
+
+# Back up the managed Photos library, all of iCloud Drive, and the Android
+# camera mirror. Remove iCloud Drive here and add "$HOME/Documents" instead if
+# Desktop & Documents is not stored in iCloud.
+BACKUP_SOURCES=(
+  "$HOME/Pictures/Photos Library.photoslibrary"
+  "$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+  "$HOME/Pictures/Android Camera"
+)
+
+# Syncthing should continuously mirror the phone's DCIM/Camera directory here.
+# New files are imported into the System Photo Library before each backup.
+ANDROID_PHOTO_INBOX="$HOME/Pictures/Android Camera"
+
+# Set to 0 only for tests or for repositories intentionally kept off /Volumes.
+BACKUP_REQUIRE_EXTERNAL_VOLUMES=1
+
+# Additional restic exclude patterns may be added here.
+BACKUP_EXCLUDES=(
+  ".DS_Store"
+)
