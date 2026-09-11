@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -uo pipefail
+
+BACKUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly BACKUP_ROOT
+readonly SYNC_STATE_DIR="$HOME/.local/state/setup/backup"
+readonly FAILURE_MARKER="$SYNC_STATE_DIR/failure-active"
+readonly LAST_SUCCESS="$SYNC_STATE_DIR/last-success"
+
+notify() {
+  local title="$1"
+  local message="$2"
+  local sound="$3"
+  osascript - "$title" "$message" "$sound" <<'APPLESCRIPT' >/dev/null 2>&1
+on run argv
+  display notification (item 2 of argv) with title (item 1 of argv) sound name (item 3 of argv)
+end run
+APPLESCRIPT
+}
+
+run_sync() {
+  if ! pgrep -x syncthing >/dev/null 2>&1; then
+    printf 'error: Syncthing is not running; start it with: brew services start syncthing\n' >&2
+    return 1
+  fi
+  "$BACKUP_ROOT/bin/backup" sync
+}
+
+mkdir -p "$SYNC_STATE_DIR"
+
+if run_sync; then
+  date '+%Y-%m-%d %H:%M:%S %Z' >"$LAST_SUCCESS"
+  if [[ -f "$FAILURE_MARKER" ]]; then
+    notify "Photo sync recovered" "Android-to-iCloud photo sync is working again." "Glass"
+    rm -f "$FAILURE_MARKER"
+  fi
+  exit 0
+else
+  status=$?
+fi
+
+if [[ ! -f "$FAILURE_MARKER" ]]; then
+  notify "Photo sync failed" "Android-to-iCloud sync failed. Run ~/setup/bin/backup sync-status and check the sync log." "Basso"
+  date '+%Y-%m-%d %H:%M:%S %Z' >"$FAILURE_MARKER"
+fi
+exit "$status"

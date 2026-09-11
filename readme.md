@@ -62,6 +62,88 @@ Some setup remains interactive: macOS may request Accessibility permissions,
 the App Store and applications require sign-in, Bitwarden's SSH agent must be
 enabled, and browsers need their account sync configured.
 
+## Photos and documents backup
+
+The home profile installs Syncthing and restic. Together they replace recurring
+Google Takeout exports with this flow:
+
+```text
+Android DCIM -> Syncthing mirror on Mac -> Apple Photos/iCloud
+                                      `-> encrypted snapshots on SSD A and SSD B
+iCloud Drive --------------------------^
+```
+
+One-time setup:
+
+1. In Photos > Settings > iCloud, enable **iCloud Photos** and **Download
+   Originals to this Mac**. An optimised library is not a complete local copy.
+2. Install Syncthing on Android and share `DCIM/Camera` with the Mac as
+   `~/Pictures/Android Camera`. Use send-only on Android and receive-only on the
+   Mac. The Mac mirror is allowed to follow phone deletions because restic keeps
+   versioned snapshots.
+3. Format and name two external SSDs, copy `config/backup.conf.example` to
+   `~/.config/setup/backup.conf`, and replace the example volume names.
+4. Run `~/setup/bin/backup init`. Enter one strong repository password and save
+   a recovery copy in Bitwarden; the command stores it in macOS Keychain and
+   initialises both disks.
+
+For every subsequent backup, connect both SSDs and run:
+
+```sh
+~/setup/bin/backup
+```
+
+To send new Android photos to Apple Photos/iCloud when the SSDs are not
+available, run (no `backup.conf` is required):
+
+```sh
+~/setup/bin/backup sync
+```
+
+This command does not access either restic repository. It imports new media and
+leaves Photos open so iCloud can continue uploading. A later full backup still
+captures the Photos library on both SSDs.
+
+To run this automatically every hour and after login, first run `backup sync`
+manually once so macOS can request Photos automation permission, then install
+the user LaunchAgent:
+
+```sh
+brew services start syncthing
+~/setup/bin/backup install-sync
+```
+
+The scheduled job stays quiet on successful runs. On its first consecutive
+failure it sends a macOS Notification Center alert, suppresses duplicate alerts,
+and sends a recovery notification after the next success. It checks that
+Syncthing is running, records the last successful run, and logs under
+`~/.local/state/setup/backup`. Inspect or remove it with:
+
+```sh
+~/setup/bin/backup sync-status
+~/setup/bin/backup uninstall-sync
+```
+
+The command refuses to continue if a source or either disk is missing. It asks
+Photos to import only new Android media (with duplicate checking), closes Photos
+for a consistent snapshot, backs up every configured source to both encrypted
+repositories, and applies retention of 7 daily, 8 weekly, 24 monthly, and 10
+yearly snapshots. It reopens Photos if it was open before the run.
+
+Useful diagnostics and verification:
+
+```sh
+~/setup/bin/backup doctor
+~/setup/bin/backup --dry-run
+~/setup/bin/backup check
+```
+
+Keep both SSDs disconnected between runs, and preferably store one away from
+home. iCloud Photos is synchronisation rather than an independent backup:
+deletions propagate, while the offline restic snapshots preserve earlier data.
+Google Takeout is still appropriate for one final historical Google Photos
+export; the ongoing phone-to-Mac path makes future exports unnecessary.
+
 ## macOS window workflow
 
 The AeroSpace configuration is stored in `config/aerospace/aerospace.toml`.

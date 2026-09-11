@@ -1,0 +1,446 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+BACKUP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly BACKUP_ROOT
+readonly DEFAULT_BACKUP_CONFIG="$HOME/.config/setup/backup.conf"
+readonly KEYCHAIN_SERVICE="setup-backup-restic"
+readonly PHOTO_IMPORT_STATE="$HOME/.local/state/setup/backup/imported-photos.txt"
+readonly SYNC_AGENT_LABEL="com.setup.photo-sync"
+readonly SYNC_AGENT_PATH="$HOME/Library/LaunchAgents/$SYNC_AGENT_LABEL.plist"
+readonly SYNC_STATE_DIR="$HOME/.local/state/setup/backup"
+
+usage() {
+  cat <<'USAGE'
+Usage: bin/backup [run|sync|install-sync|uninstall-sync|sync-status|doctor|init|check] [options]
+
+Commands:
+  run       Import new Android photos, then back up to both SSDs (default)
+  sync      Import new Android photos into Photos/iCloud without the SSDs
+  install-sync    Schedule sync hourly and after login, with failure alerts
+  uninstall-sync  Remove the scheduled sync agent
+  sync-status     Show scheduler state and the most recent successful run
+  doctor    Validate configuration, sources, dependencies, and mounted disks
+  init      Store a restic password in Keychain and initialise both SSDs
+  check     Verify repository metadata and a sample of stored data
+
+Options:
+  --dry-run       Show what run would do without importing or writing
+  --skip-import   Do not import Android photos into Apple Photos
+  --all-photos    Ignore the import ledger and ask Photos to check every file
+  -h, --help      Show this help
+
+Set BACKUP_CONFIG to use a configuration other than
+~/.config/setup/backup.conf.
+USAGE
+}
+
+log() {
+  printf '\n==> %s\n' "$*"
+}
+
+warn() {
+  printf 'warning: %s\n' "$*" >&2
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+shell_join() {
+  printf '+'
+  printf ' %q' "$@"
+  printf '\n'
+}
+
+config_path="${BACKUP_CONFIG:-$DEFAULT_BACKUP_CONFIG}"
+command_name="run"
+dry_run=0
+skip_import=0
+all_photos=0
+IMPORTED_PHOTO_COUNT=0
+
+if [[ $# -gt 0 && "$1" != -* ]]; then
+  command_name="$1"
+  shift
+fi
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run) dry_run=1 ;;
+    --skip-import) skip_import=1 ;;
+    --all-photos) all_photos=1 ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *) die "unknown option: $1" ;;
+  esac
+  shift
+done
+
+case "$command_name" in
+  run | sync | install-sync | uninstall-sync | sync-status | doctor | init | check) ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  *) die "unknown command: $command_name" ;;
+esac
+
+if [[ "$command_name" == "sync" || "$command_name" == "install-sync" || "$command_name" == "uninstall-sync" || "$command_name" == "sync-status" ]]; then
+  ANDROID_PHOTO_INBOX="$HOME/Pictures/Android Camera"
+  if [[ -f "$config_path" ]]; then
+    # shellcheck source=/dev/null
+    source "$config_path"
+  fi
+else
+  [[ -f "$config_path" ]] || die "configuration not found: $config_path (copy config/backup.conf.example there first)"
+  # shellcheck source=/dev/null
+  source "$config_path"
+
+  [[ ${#BACKUP_REPOSITORIES[@]} -eq 2 ]] || die "BACKUP_REPOSITORIES must contain exactly two SSD repositories"
+  [[ ${#BACKUP_SOURCES[@]} -gt 0 ]] || die "BACKUP_SOURCES must contain at least one path"
+  [[ "${BACKUP_REPOSITORIES[0]}" != "${BACKUP_REPOSITORIES[1]}" ]] || die "the two repositories must be different"
+fi
+
+export RESTIC_PASSWORD_COMMAND="security find-generic-password -a '$USER' -s '$KEYCHAIN_SERVICE' -w"
+
+require_commands() {
+  local tool
+  for tool in restic security osascript; do
+    command -v "$tool" >/dev/null 2>&1 || die "$tool is required; run bin/setup home --only packages"
+  done
+}
+
+require_photo_commands() {
+  local tool
+  for tool in osascript open; do
+    command -v "$tool" >/dev/null 2>&1 || die "$tool is required on this Mac"
+  done
+}
+
+volume_root_for() {
+  local repository="$1"
+  local remainder volume_name
+  [[ "$repository" == /Volumes/*/* ]] || return 1
+  remainder="${repository#/Volumes/}"
+  volume_name="${remainder%%/*}"
+  printf '/Volumes/%s\n' "$volume_name"
+}
+
+validate_repository_location() {
+  local repository="$1"
+  local volume_root
+  if [[ "${BACKUP_REQUIRE_EXTERNAL_VOLUMES:-1}" == "0" ]]; then
+    return
+  fi
+  volume_root="$(volume_root_for "$repository")" || die "repository must be below an external volume: $repository"
+  [[ -d "$volume_root" ]] || die "backup disk is not connected: $volume_root"
+  /sbin/mount | grep -Fq " on $volume_root (" || die "$volume_root exists but is not a mounted volume"
+}
+
+validate_sources() {
+  local source_path
+  for source_path in "${BACKUP_SOURCES[@]}"; do
+    [[ -e "$source_path" ]] || die "backup source does not exist: $source_path"
+  done
+  if [[ -n "${ANDROID_PHOTO_INBOX:-}" && ! -d "$ANDROID_PHOTO_INBOX" ]]; then
+    die "ANDROID_PHOTO_INBOX does not exist: $ANDROID_PHOTO_INBOX"
+  fi
+}
+
+validate_repositories() {
+  local repository
+  for repository in "${BACKUP_REPOSITORIES[@]}"; do
+    validate_repository_location "$repository"
+    [[ -f "$repository/config" ]] || die "repository is not initialised: $repository (run bin/backup init)"
+  done
+}
+
+run_doctor() {
+  require_commands
+  validate_sources
+  validate_repositories
+  security find-generic-password -a "$USER" -s "$KEYCHAIN_SERVICE" -w >/dev/null 2>&1 ||
+    die "restic password is missing from Keychain (run bin/backup init)"
+  printf 'ok: configuration, sources, Keychain password, and both SSDs are ready\n'
+}
+
+run_init() {
+  require_commands
+  validate_sources
+
+  if ! security find-generic-password -a "$USER" -s "$KEYCHAIN_SERVICE" -w >/dev/null 2>&1; then
+    printf 'Enter one strong restic password and save a recovery copy in Bitwarden.\n'
+    security add-generic-password -U -a "$USER" -s "$KEYCHAIN_SERVICE" -w
+  fi
+
+  local repository
+  for repository in "${BACKUP_REPOSITORIES[@]}"; do
+    validate_repository_location "$repository"
+    if [[ -f "$repository/config" ]]; then
+      log "Already initialised: $repository"
+      restic -r "$repository" snapshots --compact >/dev/null
+    else
+      log "Initialising $repository"
+      mkdir -p "$repository"
+      restic -r "$repository" init
+    fi
+  done
+  printf '\nBackup repositories are ready. Run bin/backup to create the first snapshots.\n'
+}
+
+is_media_file() {
+  case "${1##*.}" in
+    jpg | JPG | jpeg | JPEG | heic | HEIC | png | PNG | gif | GIF | tif | TIF | tiff | TIFF | webp | WEBP | dng | DNG | mov | MOV | mp4 | MP4 | m4v | M4V | 3gp | 3GP) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+import_android_photos() {
+  [[ "$skip_import" == "0" && -n "${ANDROID_PHOTO_INBOX:-}" ]] || return 0
+
+  local state_dir state_file candidate imported_count
+  local -a batch=()
+  state_dir="$(dirname "$PHOTO_IMPORT_STATE")"
+  state_file="$PHOTO_IMPORT_STATE"
+  imported_count=0
+
+  mkdir -p "$state_dir"
+  touch "$state_file"
+
+  import_batch() {
+    [[ ${#batch[@]} -gt 0 ]] || return 0
+    if [[ "$dry_run" == "1" ]]; then
+      shell_join osascript "$BACKUP_ROOT/lib/backup/import-photos.applescript" "${batch[@]}"
+    else
+      osascript "$BACKUP_ROOT/lib/backup/import-photos.applescript" "${batch[@]}" >/dev/null
+      printf '%s\n' "${batch[@]}" >>"$state_file"
+    fi
+    imported_count=$((imported_count + ${#batch[@]}))
+    batch=()
+  }
+
+  while IFS= read -r -d '' candidate; do
+    is_media_file "$candidate" || continue
+    if [[ "$all_photos" == "0" ]] && grep -Fqx -- "$candidate" "$state_file"; then
+      continue
+    fi
+    batch+=("$candidate")
+    [[ ${#batch[@]} -lt 100 ]] || import_batch
+  done < <(find "$ANDROID_PHOTO_INBOX" -type f -print0)
+  import_batch
+
+  if [[ "$imported_count" -gt 0 ]]; then
+    log "Asked Photos to process $imported_count new media file(s)"
+  else
+    log "No new Android media to import"
+  fi
+  IMPORTED_PHOTO_COUNT="$imported_count"
+}
+
+reopen_photos_on_exit() {
+  if [[ "${BACKUP_REOPEN_PHOTOS:-0}" == "1" && "$dry_run" == "0" ]]; then
+    open -a Photos
+  fi
+}
+
+quiesce_photos_library() {
+  local source_path includes_photos_library
+  includes_photos_library=0
+  for source_path in "${BACKUP_SOURCES[@]}"; do
+    if [[ "$source_path" == *.photoslibrary ]]; then
+      includes_photos_library=1
+    fi
+  done
+  [[ "$includes_photos_library" == "1" ]] || return 0
+  pgrep -x Photos >/dev/null 2>&1 || return 0
+
+  log "Closing Photos for a consistent library snapshot"
+  if [[ "$dry_run" == "1" ]]; then
+    shell_join osascript -e 'tell application "Photos" to quit'
+    return
+  fi
+  osascript -e 'tell application "Photos" to quit' >/dev/null
+  local attempt=0
+  while [[ "$attempt" -lt 10 ]]; do
+    pgrep -x Photos >/dev/null 2>&1 || return 0
+    sleep 1
+    attempt=$((attempt + 1))
+  done
+  die "Photos did not quit within 10 seconds"
+}
+
+restic_backup_repository() {
+  local repository="$1"
+  local -a backup_args exclude_args
+  local pattern
+  backup_args=(restic -r "$repository" backup --tag setup-backup --exclude-caches)
+  exclude_args=()
+  for pattern in "${BACKUP_EXCLUDES[@]:-}"; do
+    [[ -n "$pattern" ]] && exclude_args+=(--exclude "$pattern")
+  done
+  backup_args+=("${exclude_args[@]}" "${BACKUP_SOURCES[@]}")
+
+  log "Backing up to $repository"
+  if [[ "$dry_run" == "1" ]]; then
+    shell_join "${backup_args[@]}"
+  else
+    "${backup_args[@]}"
+  fi
+}
+
+restic_apply_retention() {
+  local repository="$1"
+  log "Applying snapshot retention to $repository"
+  if [[ "$dry_run" == "1" ]]; then
+    shell_join restic -r "$repository" forget --tag setup-backup --keep-daily 7 --keep-weekly 8 --keep-monthly 24 --keep-yearly 10 --prune
+  else
+    restic -r "$repository" forget --tag setup-backup \
+      --keep-daily 7 --keep-weekly 8 --keep-monthly 24 --keep-yearly 10 --prune
+  fi
+}
+
+run_backup() {
+  run_doctor
+  if pgrep -x Photos >/dev/null 2>&1; then
+    export BACKUP_REOPEN_PHOTOS=1
+  fi
+  trap reopen_photos_on_exit EXIT
+  import_android_photos
+  quiesce_photos_library
+
+  local repository
+  for repository in "${BACKUP_REPOSITORIES[@]}"; do
+    restic_backup_repository "$repository"
+  done
+  # Secure a current snapshot on both disks before doing pruning work on either.
+  for repository in "${BACKUP_REPOSITORIES[@]}"; do
+    restic_apply_retention "$repository"
+  done
+
+  log "Backup completed successfully on both SSDs"
+}
+
+run_sync() {
+  require_photo_commands
+  [[ -n "${ANDROID_PHOTO_INBOX:-}" ]] || die "ANDROID_PHOTO_INBOX is not configured"
+  [[ -d "$ANDROID_PHOTO_INBOX" ]] || die "ANDROID_PHOTO_INBOX does not exist: $ANDROID_PHOTO_INBOX"
+  [[ "$skip_import" == "0" ]] || die "--skip-import cannot be used with the sync command"
+
+  import_android_photos
+  if [[ "$IMPORTED_PHOTO_COUNT" -gt 0 ]]; then
+    log "Leaving Photos open so iCloud can continue syncing"
+    if [[ "$dry_run" == "1" ]]; then
+      shell_join open -a Photos
+    else
+      open -a Photos
+    fi
+  fi
+}
+
+xml_escape() {
+  local value="$1"
+  value="${value//&/&amp;}"
+  value="${value//</&lt;}"
+  value="${value//>/&gt;}"
+  printf '%s' "$value"
+}
+
+install_sync_agent() {
+  command -v launchctl >/dev/null 2>&1 || die "launchctl is required on macOS"
+  command -v plutil >/dev/null 2>&1 || die "plutil is required on macOS"
+
+  local escaped_program escaped_log escaped_error agent_directory
+  agent_directory="$(dirname "$SYNC_AGENT_PATH")"
+  escaped_program="$(xml_escape "$BACKUP_ROOT/bin/backup-sync-agent")"
+  escaped_log="$(xml_escape "$SYNC_STATE_DIR/sync.log")"
+  escaped_error="$(xml_escape "$SYNC_STATE_DIR/sync-error.log")"
+  mkdir -p "$agent_directory" "$SYNC_STATE_DIR"
+
+  cat >"$SYNC_AGENT_PATH" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$SYNC_AGENT_LABEL</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>$escaped_program</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>3600</integer>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>StandardOutPath</key>
+  <string>$escaped_log</string>
+  <key>StandardErrorPath</key>
+  <string>$escaped_error</string>
+</dict>
+</plist>
+EOF
+  plutil -lint "$SYNC_AGENT_PATH" >/dev/null
+
+  launchctl bootout "gui/$(id -u)" "$SYNC_AGENT_PATH" >/dev/null 2>&1 || true
+  launchctl bootstrap "gui/$(id -u)" "$SYNC_AGENT_PATH"
+  launchctl enable "gui/$(id -u)/$SYNC_AGENT_LABEL"
+
+  printf 'Scheduled photo sync is installed and will run hourly and after login.\n'
+  printf 'Status: %s sync-status\n' "$BACKUP_ROOT/bin/backup"
+  printf 'Logs:   %s/sync.log\n' "$SYNC_STATE_DIR"
+}
+
+uninstall_sync_agent() {
+  if [[ -f "$SYNC_AGENT_PATH" ]]; then
+    launchctl bootout "gui/$(id -u)" "$SYNC_AGENT_PATH" >/dev/null 2>&1 || true
+    rm -f "$SYNC_AGENT_PATH"
+  fi
+  printf 'Scheduled photo sync is not installed. Existing logs were preserved.\n'
+}
+
+show_sync_status() {
+  if [[ -f "$SYNC_AGENT_PATH" ]] && launchctl print "gui/$(id -u)/$SYNC_AGENT_LABEL" >/dev/null 2>&1; then
+    printf 'Scheduler: installed and loaded (hourly)\n'
+  elif [[ -f "$SYNC_AGENT_PATH" ]]; then
+    printf 'Scheduler: installed but not loaded\n'
+  else
+    printf 'Scheduler: not installed\n'
+  fi
+
+  if [[ -f "$SYNC_STATE_DIR/last-success" ]]; then
+    printf 'Last success: %s\n' "$(<"$SYNC_STATE_DIR/last-success")"
+  else
+    printf 'Last success: none recorded\n'
+  fi
+  if [[ -f "$SYNC_STATE_DIR/failure-active" ]]; then
+    printf 'Health: failing (a notification has been sent)\n'
+  else
+    printf 'Health: no active failure\n'
+  fi
+}
+
+run_check() {
+  run_doctor
+  local repository
+  for repository in "${BACKUP_REPOSITORIES[@]}"; do
+    log "Checking $repository"
+    restic -r "$repository" check --read-data-subset=5%
+  done
+}
+
+case "$command_name" in
+  run) run_backup ;;
+  sync) run_sync ;;
+  install-sync) install_sync_agent ;;
+  uninstall-sync) uninstall_sync_agent ;;
+  sync-status) show_sync_status ;;
+  doctor) run_doctor ;;
+  init) run_init ;;
+  check) run_check ;;
+esac

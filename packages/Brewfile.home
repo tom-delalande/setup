@@ -9,5 +9,9 @@ cask "steam"
 cask "chatgpt"
 cask "localsend"
 
+# Continuous Android camera transfer and encrypted, versioned local backups.
+brew "syncthing"
+brew "restic"
+
 mas "Davinci Resolve", id: 571213070
 mas "Logic Pro", id: 634148309
