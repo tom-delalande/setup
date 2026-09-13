@@ -35,3 +35,17 @@ fi
 if command -v trash >/dev/null 2>&1; then
   alias rm='trash'
 fi
+
+# Open Lazygit in the current terminal. Using the XDG config directory keeps
+# its configuration and recent-repository state in the managed setup files.
+_open_lazygit() {
+  if (( $+commands[lazygit] )); then
+    zle -I
+    XDG_CONFIG_HOME="$HOME/.config" lazygit
+    zle reset-prompt
+  else
+    zle -M 'lazygit is not installed'
+  fi
+}
+zle -N _open_lazygit
+bindkey '^G' _open_lazygit

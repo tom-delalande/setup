@@ -59,7 +59,7 @@ for obsolete_link in fish starship.toml tmux; do
     fail "obsolete $obsolete_link link was not removed"
 done
 
-for command_name in nvim trash zoxide aerospace mise node; do
+for command_name in lazygit nvim trash zoxide aerospace mise node zed; do
   ln -s /usr/bin/true "$test_bin/$command_name"
 done
 mkdir -p "$HOME/.oh-my-zsh"

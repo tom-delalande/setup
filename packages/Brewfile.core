@@ -17,6 +17,7 @@ cask "bruno"
 cask "opensuperwhisper"
 
 brew "git"
+brew "lazygit"
 brew "mise"
 brew "neovim"
 brew "sqlite"
