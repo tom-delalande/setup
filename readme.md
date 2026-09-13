@@ -158,7 +158,7 @@ accordion layout by default, with a small part of adjacent windows kept visible.
 | 2 | Browsers (Firefox and Google Chrome) |
 | 3 | Communications and lightweight productivity (Slack, Spotify, TickTick) |
 | 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Bruno, Zed) |
-| 5 | Terminals, development processes, and monitoring (Ghostty, Neovim, DBUI) |
+| 5 | Terminals, Git workflows, development processes, and monitoring (Ghostty, LazyGit, Neovim, DBUI) |
 | 6 | Steam |
 | 7–8 | Spare/manual workspaces |
 | 9 | Default destination for any app without an explicit routing rule |
