@@ -79,6 +79,10 @@ on-window-detected = [
     { if = 'test %{app-bundle-id} = com.TablePro', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.usebruno.app', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = dev.zed.Zed', run = 'move-node-to-workspace 4' },
+    # Keep remote-control sessions separate from local work. Windows App is
+    # routed when present, but is intentionally not installed by this setup.
+    { if = 'test %{app-bundle-id} = com.apple.ScreenSharing', run = 'move-node-to-workspace 7' },
+    { if = 'test %{app-bundle-id} = com.microsoft.rdc.macos', run = 'move-node-to-workspace 7' },
     { if = 'test %{app-bundle-id} = com.valvesoftware.steam', run = 'move-node-to-workspace 6' },
     # Keep every terminal window together, regardless of how Ghostty is launched.
     { if = 'test %{app-bundle-id} = com.mitchellh.ghostty', run = 'move-node-to-workspace 5' },

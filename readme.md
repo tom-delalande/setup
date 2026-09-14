@@ -160,7 +160,8 @@ accordion layout by default, with a small part of adjacent windows kept visible.
 | 4 | Workbench (Finder, IntelliJ IDEA, Affinity, Obsidian, Bitwarden, SourceTree, TablePro, Bruno, Zed) |
 | 5 | Terminals, Git workflows, development processes, and monitoring (Ghostty, LazyGit, Neovim, DBUI) |
 | 6 | Steam |
-| 7–8 | Spare/manual workspaces |
+| 7 | Remote connections (macOS Screen Sharing and Windows App, when installed) |
+| 8 | Spare/manual workspace |
 | 9 | Default destination for any app without an explicit routing rule |
 
 Apps are routed when AeroSpace detects a new window, including apps opened from
