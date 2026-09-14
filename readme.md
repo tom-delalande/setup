@@ -182,6 +182,7 @@ exempt.
 | `Option-G` | Open SourceTree on workspace 4 |
 | `Option-O` | Open Obsidian on workspace 4 |
 | `Option-P` | Open TickTick on workspace 3 |
+| `Option-R` | Switch to workspace 7 |
 | `Option-Z` | Open Bitwarden on workspace 4 |
 | `Option-A` | Open ChatGPT in Firefox on workspace 2 |
 | `Option-C` | Open Google Calendar in Firefox on workspace 2 |
