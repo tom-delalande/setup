@@ -169,6 +169,7 @@ alt-s = ['workspace 5', 'exec-and-forget /usr/bin/open -na /Applications/Ghostty
 alt-g = ['workspace 4', 'exec-and-forget /usr/bin/open -a "Sourcetree"']
 alt-o = ['workspace 4', 'exec-and-forget open -a "Obsidian"']
 alt-p = ['workspace 3', 'exec-and-forget open -a "TickTick"']
+alt-r = 'workspace 7'
 alt-z = ['workspace 4', 'exec-and-forget open -a "Bitwarden"']
 
 alt-a = ['workspace 2', 'exec-and-forget firefox --new-tab="https://chatgpt.com"']
