@@ -18,10 +18,10 @@ continues automatically after installation finishes.
 To update an existing machine or preview changes:
 
 ```sh
-~/setup/bin/setup home
-~/setup/bin/setup work --dry-run
-~/setup/bin/setup work --only packages,dotfiles
-~/setup/bin/setup-doctor
+tom setup home
+tom setup work --dry-run
+tom setup work --only packages,dotfiles
+tom setup-doctor
 ```
 
 AeroSpace is distributed through its publisher's Homebrew tap. Its cask is
@@ -43,11 +43,11 @@ speeds. To apply the complete opinionated configuration, including clearing the
 Dock and using the fast mouse and trackpad speeds:
 
 ```sh
-~/setup/bin/setup home --include-opinionated
+tom setup home --include-opinionated
 ```
 
 The setup command supports comma-separated `--only` and `--skip` phase
-lists. Run `~/setup/bin/setup --help` for the complete interface. After setup,
+lists. Run `tom setup --help` for the complete interface. After setup,
 `setup-doctor` runs automatically at the end and verifies packages, managed
 links, Mise tools, PATH in a fresh login shell, Git, the Bitwarden SSH agent,
 and Neovim. It exits unsuccessfully when required configuration is missing,
@@ -83,21 +83,21 @@ One-time setup:
    versioned snapshots.
 3. Format and name two external SSDs, copy `config/backup.conf.example` to
    `~/.config/setup/backup.conf`, and replace the example volume names.
-4. Run `~/setup/bin/backup init`. Enter one strong repository password and save
+4. Run `tom backup init`. Enter one strong repository password and save
    a recovery copy in Bitwarden; the command stores it in macOS Keychain and
    initialises both disks.
 
 For every subsequent backup, connect both SSDs and run:
 
 ```sh
-~/setup/bin/backup
+tom backup
 ```
 
 To send new Android photos to Apple Photos/iCloud when the SSDs are not
 available, run (no `backup.conf` is required):
 
 ```sh
-~/setup/bin/backup sync
+tom backup sync
 ```
 
 This command does not access either restic repository. It imports new media and
@@ -110,7 +110,7 @@ the user LaunchAgent:
 
 ```sh
 brew services start syncthing
-~/setup/bin/backup install-sync
+tom backup install-sync
 ```
 
 The scheduled job stays quiet on successful runs. On its first consecutive
@@ -120,8 +120,8 @@ Syncthing is running, records the last successful run, and logs under
 `~/.local/state/setup/backup`. Inspect or remove it with:
 
 ```sh
-~/setup/bin/backup sync-status
-~/setup/bin/backup uninstall-sync
+tom backup sync-status
+tom backup uninstall-sync
 ```
 
 The command refuses to continue if a source or either disk is missing. It asks
@@ -133,9 +133,9 @@ yearly snapshots. It reopens Photos if it was open before the run.
 Useful diagnostics and verification:
 
 ```sh
-~/setup/bin/backup doctor
-~/setup/bin/backup --dry-run
-~/setup/bin/backup check
+tom backup doctor
+tom backup --dry-run
+tom backup check
 ```
 
 Keep both SSDs disconnected between runs, and preferably store one away from
