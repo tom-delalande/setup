@@ -139,7 +139,7 @@ if command -v mise >/dev/null 2>&1; then
   fi
 fi
 
-git_excludes="$(git config --global --path --get core.excludesfile 2>/dev/null || true)"
+git_excludes="$(git config --global --includes --path --get core.excludesfile 2>/dev/null || true)"
 if [[ "$git_excludes" == "$HOME/.config/git/ignore" ]]; then
   pass_check "Git global ignore is configured"
 else
