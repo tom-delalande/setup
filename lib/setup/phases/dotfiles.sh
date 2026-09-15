@@ -30,6 +30,17 @@ setup_remove_obsolete_link() {
   fi
 }
 
+setup_ensure_local_gitconfig() {
+  local destination_path="$HOME/.gitconfig"
+
+  if [[ -e "$destination_path" ]]; then
+    printf 'ok: %s\n' "$destination_path"
+    return
+  fi
+
+  run cp "$SETUP_ROOT/config/git/local-gitconfig" "$destination_path"
+}
+
 setup_phase_dotfiles() {
   log "Dotfiles"
 
@@ -43,4 +54,5 @@ setup_phase_dotfiles() {
   # shellcheck disable=SC1091
   source "$SETUP_ROOT/lib/setup/managed-links.sh"
   setup_each_managed_link setup_link "$SETUP_PROFILE"
+  setup_ensure_local_gitconfig
 }
