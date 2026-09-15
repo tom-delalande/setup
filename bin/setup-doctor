@@ -114,7 +114,7 @@ for command_name in git lazygit nvim trash zoxide aerospace mise zed; do
   fi
 done
 
-login_commands=(brew git lazygit nvim trash zoxide aerospace mise node zed)
+login_commands=(brew git lazygit nvim trash zoxide aerospace mise node zed setup)
 if [[ "$profile" == "work" ]]; then
   login_commands+=(java gradle terraform)
 fi
