@@ -16,6 +16,7 @@ cask "tablepro"
 cask "bruno"
 cask "opensuperwhisper"
 
+brew "fzf"
 brew "git"
 brew "lazygit"
 brew "mise"
