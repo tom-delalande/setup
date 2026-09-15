@@ -37,6 +37,7 @@ chmod +x "$test_bin/brew"
 
 export HOME="$test_home"
 export PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
+ln -s "$TEST_ROOT" "$HOME/setup"
 
 printf 'existing zsh configuration\n' >"$HOME/.zshrc"
 mkdir -p "$HOME/.config"
