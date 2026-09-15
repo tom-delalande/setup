@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+UPDATE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly UPDATE_ROOT
+
+# shellcheck source=../lib/setup/common.sh
+# shellcheck disable=SC1091
+source "$UPDATE_ROOT/lib/setup/common.sh"
+
+usage() {
+  cat <<'USAGE'
+Usage: bin/update [--dry-run]
+
+Updates Homebrew formulae and casks, Mac App Store apps (if mas is
+installed), and Neovim plugins.
+USAGE
+}
+
+export SETUP_DRY_RUN=0
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      SETUP_DRY_RUN=1
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      die "unknown option: $1"
+      ;;
+  esac
+  shift
+done
+
+brew_bin="$(brew_command)" || die "Homebrew is required"
+
+log "Homebrew formulae and casks"
+run "$brew_bin" update
+run "$brew_bin" upgrade
+run "$brew_bin" cleanup
+
+if command -v mas >/dev/null 2>&1; then
+  log "Mac App Store apps"
+  run mas upgrade
+else
+  warn "mas is not installed; skipping Mac App Store updates"
+fi
+
+log "Neovim plugins"
+run nvim --headless "+Lazy! sync" +qa
+
+log "Update complete"

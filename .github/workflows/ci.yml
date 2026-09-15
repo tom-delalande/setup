@@ -15,8 +15,8 @@ jobs:
 
       - name: Check shell scripts
         run: |
-          shellcheck bootstrap.sh bin/setup bin/setup-doctor bin/tom config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
-          shfmt -d -i 2 -ci bootstrap.sh bin/setup bin/setup-doctor bin/tom config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
+          shellcheck bootstrap.sh bin/setup bin/setup-doctor bin/tom bin/update config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
+          shfmt -d -i 2 -ci bootstrap.sh bin/setup bin/setup-doctor bin/tom bin/update config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
 
       - name: Check package manifests
         run: |

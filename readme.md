@@ -62,6 +62,14 @@ Some setup remains interactive: macOS may request Accessibility permissions,
 the App Store and applications require sign-in, Bitwarden's SSH agent must be
 enabled, and browsers need their account sync configured.
 
+To upgrade Homebrew formulae and casks, Mac App Store apps (when `mas` is
+installed), and Neovim plugins:
+
+```sh
+tom update
+tom update --dry-run
+```
+
 ## Photos and documents backup
 
 The home profile installs Syncthing and restic. Together they replace recurring
