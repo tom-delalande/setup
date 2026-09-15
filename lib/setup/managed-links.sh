@@ -14,4 +14,5 @@ setup_each_managed_link() {
   "$callback" "$SETUP_ROOT/config/aerospace" "$HOME/.config/aerospace"
   "$callback" "$SETUP_ROOT/config/mise/$profile.toml" "$HOME/.config/mise/config.toml"
   "$callback" "$SETUP_ROOT/config/ssh/config" "$HOME/.ssh/config"
+  "$callback" "$SETUP_ROOT/bin/tom" "$HOME/.local/bin/tom"
 }

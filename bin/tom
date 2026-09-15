@@ -2,7 +2,16 @@
 
 set -euo pipefail
 
-TOM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+tom_script="${BASH_SOURCE[0]}"
+while [[ -L "$tom_script" ]]; do
+  link_target="$(readlink "$tom_script")"
+  if [[ "$link_target" == /* ]]; then
+    tom_script="$link_target"
+  else
+    tom_script="$(dirname "$tom_script")/$link_target"
+  fi
+done
+TOM_ROOT="$(cd "$(dirname "$tom_script")" && pwd)"
 readonly TOM_ROOT
 
 usage() {
