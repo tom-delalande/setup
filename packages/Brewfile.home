@@ -8,6 +8,7 @@ cask "stremio"
 cask "steam"
 cask "chatgpt"
 cask "localsend"
+cask "firefox"
 
 # Continuous Android camera transfer and encrypted, versioned local backups.
 brew "syncthing"

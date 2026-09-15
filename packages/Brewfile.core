@@ -3,7 +3,6 @@ tap "nikitabobko/tap", trusted: true
 cask "nikitabobko/tap/aerospace", trusted: true
 cask "bitwarden"
 cask "docker-desktop"
-cask "firefox"
 cask "google-chrome"
 cask "ghostty"
 cask "hiddenbar"
@@ -14,6 +13,8 @@ cask "ticktick"
 cask "sourcetree"
 cask "tablepro"
 cask "bruno"
+cask "bruno-cli"
+cask "gh"
 cask "opensuperwhisper"
 
 brew "fzf"
