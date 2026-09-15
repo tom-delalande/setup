@@ -38,6 +38,13 @@ chmod +x "$test_bin/brew"
 export HOME="$test_home"
 export PATH="$test_bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
+while IFS= read -r brewfile; do
+  while IFS= read -r tap_declaration; do
+    [[ "$tap_declaration" == *,\ trusted:\ true ]] ||
+      fail "untrusted tap declaration in $brewfile: $tap_declaration"
+  done < <(sed -n 's/^[[:space:]]*tap \(.*\)$/\1/p' "$brewfile")
+done < <(find "$TEST_ROOT/packages" -maxdepth 1 -type f -name 'Brewfile*' -print)
+
 printf 'existing zsh configuration\n' >"$HOME/.zshrc"
 mkdir -p "$HOME/.config"
 ln -s "$TEST_ROOT/config/fish" "$HOME/.config/fish"
@@ -59,7 +66,7 @@ for obsolete_link in fish starship.toml tmux; do
     fail "obsolete $obsolete_link link was not removed"
 done
 
-for command_name in lazygit nvim trash zoxide aerospace mise node zed; do
+for command_name in gum lazygit nvim trash zoxide aerospace mise node zed; do
   ln -s /usr/bin/true "$test_bin/$command_name"
 done
 mkdir -p "$HOME/.oh-my-zsh"
@@ -75,6 +82,8 @@ if printf '%s\n' "$second_run" | grep -q 'mv '; then
 fi
 
 home_packages="$("$TEST_ROOT/bin/setup" home --dry-run --only packages)"
+printf '%s\n' "$home_packages" | grep -q 'xcodebuild -license accept' ||
+  fail "package setup did not accept the Xcode license"
 printf '%s\n' "$home_packages" | grep -q 'Brewfile.home' ||
   fail "home profile did not select Brewfile.home"
 printf '%s\n' "$home_packages" | grep -q 'config/mise/home.toml' ||

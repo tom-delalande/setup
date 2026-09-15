@@ -1,0 +1,944 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s nullglob
+
+CLEAN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly CLEAN_ROOT
+CLEAN_DRY_RUN="${CLEAN_DRY_RUN:-0}"
+
+work_dir="$(mktemp -d)"
+cleanup_failures="$work_dir/cleanup-failures"
+: >"$cleanup_failures"
+trap 'rm -rf "$work_dir"' EXIT
+
+usage() {
+  cat <<'USAGE'
+Usage: tom clean [apps|files|system|trash] [--dry-run]
+
+Interactively finds removable applications, personal files, and system data.
+Every cleaner shows sizes and asks for confirmation before making
+changes. --dry-run keeps the full interactive flow but only prints actions.
+USAGE
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+warn() {
+  printf 'warning: %s\n' "$*" >&2
+}
+
+format_bytes() {
+  awk -v bytes="${1:-0}" 'BEGIN {
+    split("B KB MB GB TB", units, " ")
+    value = bytes + 0
+    unit = 1
+    while (value >= 1000 && unit < 5) { value /= 1000; unit++ }
+    if (unit == 1) printf "%d %s", value, units[unit]
+    else printf "%.1f %s", value, units[unit]
+  }'
+}
+
+path_size() {
+  local path="$1"
+  if [[ -e "$path" || -L "$path" ]]; then
+    { du -sk -- "$path" 2>/dev/null || true; } | awk 'NR == 1 { bytes = $1 * 1024 } END { print bytes + 0 }'
+  else
+    printf '0\n'
+  fi
+}
+
+file_count() {
+  local path="$1"
+  if [[ -d "$path" ]]; then
+    { find "$path" -type f 2>/dev/null || true; } | wc -l | tr -d ' '
+  else
+    printf '0\n'
+  fi
+}
+
+confirm_dialog() {
+  gum confirm \
+    --default=false \
+    --affirmative 'Yes' \
+    --negative 'No' \
+    "$1"
+}
+
+confirm_removal() {
+  local count="$1"
+  local bytes="$2"
+  local formula_count="${3:-0}"
+  local note="${4:-}"
+  local message
+  message="Clean $count selected item(s), containing approximately $(format_bytes "$bytes")?"
+  if [[ "$formula_count" -gt 0 ]]; then
+    message+=" $formula_count Homebrew formula(s) are included but not size-estimated."
+  fi
+  [[ -n "$note" ]] && message+=" $note"
+  confirm_dialog "$message"
+}
+
+choose_records() {
+  local records="$1"
+  local height="$2"
+  local header="$3"
+  awk -F '\t' '{ print $5 "\t" $1 }' "$records" |
+    gum choose \
+      --no-limit \
+      --height "$height" \
+      --label-delimiter=$'\t' \
+      --unselected-prefix='[ ] ' \
+      --selected-prefix='[x] ' \
+      --header "$header — Space toggles, Enter confirms"
+}
+
+wait_for_scan() {
+  local process_id="$1"
+  local marker="$2"
+  local title="$3"
+  if [[ -t 0 && -t 1 ]]; then
+    # shellcheck disable=SC2016 # $1 is expanded by the child shell.
+    gum spin --spinner dot --title "$title" -- bash -c 'while [[ ! -f "$1" ]]; do sleep 0.1; done' _ "$marker" || true
+  else
+    printf '%s\n' "$title"
+  fi
+  wait "$process_id"
+}
+
+trash_path() {
+  local path="$1"
+  local quiet="${2:-0}"
+  local error_file="$work_dir/trash-error"
+  [[ -e "$path" || -L "$path" ]] || return 0
+  if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
+    printf 'Would move to Trash: %s\n' "$path"
+    return 0
+  fi
+  if trash "$path" 2>"$error_file"; then
+    return 0
+  fi
+  if [[ "$quiet" != "1" ]]; then
+    cat "$error_file" >&2
+  fi
+  return 1
+}
+
+privileged_move_to_trash() {
+  local path="$1"
+  local destination owner_group
+  destination="$HOME/.Trash/$(basename "$path")"
+  if [[ -e "$destination" || -L "$destination" ]]; then
+    destination="$HOME/.Trash/$(basename "$path").$(date +%Y%m%d-%H%M%S).$$"
+  fi
+  owner_group="$(id -gn)"
+
+  if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
+    printf 'Would request administrator access to move to Trash: %s\n' "$path"
+    return 0
+  fi
+
+  mkdir -p "$HOME/.Trash"
+  osascript - "$path" "$destination" "$USER" "$owner_group" <<'APPLESCRIPT'
+on run argv
+  set sourcePath to item 1 of argv
+  set destinationPath to item 2 of argv
+  set ownerName to item 3 of argv
+  set groupName to item 4 of argv
+  set moveCommand to "/bin/mv " & quoted form of sourcePath & " " & quoted form of destinationPath
+  set ownershipCommand to "/usr/sbin/chown -R " & quoted form of (ownerName & ":" & groupName) & " " & quoted form of destinationPath
+  do shell script (moveCommand & " && " & ownershipCommand) with administrator privileges
+end run
+APPLESCRIPT
+}
+
+record_cleanup_failure() {
+  printf '%s\n' "$1" >>"$cleanup_failures"
+}
+
+move_to_trash() {
+  local path="$1"
+  local description="${2:-move to Trash}"
+  if ! trash_path "$path"; then
+    warn "could not $description: $path"
+    record_cleanup_failure "$description: $path"
+  fi
+  return 0
+}
+
+trash_application() {
+  local application="$1"
+  if trash_path "$application" 1; then
+    return 0
+  fi
+  warn "$(basename "$application") requires administrator permission; requesting access to move it to Trash"
+  if ! privileged_move_to_trash "$application"; then
+    warn "could not move application to Trash: $application"
+    record_cleanup_failure "move application to Trash: $application"
+  fi
+  return 0
+}
+
+run_cleanup() {
+  local command
+  if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
+    printf 'Would run:'
+    printf ' %q' "$@"
+    printf '\n'
+  else
+    if ! "$@"; then
+      printf -v command '%q ' "$@"
+      warn "cleanup command failed: ${command% }"
+      record_cleanup_failure "${command% }"
+    fi
+  fi
+  return 0
+}
+
+run_brew_uninstall() {
+  if [[ "$CLEAN_DRY_RUN" == "1" ]]; then
+    run_cleanup brew uninstall "$@"
+  else
+    # Homebrew 7 automatically runs autoremove after every uninstall. Keep
+    # that broad dependency cleanup behind the dedicated System choice.
+    run_cleanup env HOMEBREW_NO_AUTOREMOVE=1 brew uninstall "$@"
+  fi
+}
+
+report_cleanup_failures() {
+  local count
+  [[ -s "$cleanup_failures" ]] || return 0
+  count="$(wc -l <"$cleanup_failures" | tr -d ' ')"
+  gum style --foreground 1 --border rounded --padding '0 1' \
+    "Skipped $count item(s) because they could not be cleaned:\n$(<"$cleanup_failures")"
+}
+
+normalise_name() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]'
+}
+
+managed_application_names() {
+  local manifest value
+  for manifest in "$CLEAN_ROOT"/packages/Brewfile.*; do
+    while IFS= read -r value; do
+      printf '%s\n' "${value##*/}"
+    done < <(sed -nE 's/^[[:space:]]*(cask|mas)[[:space:]]+"([^"]+)".*/\2/p' "$manifest")
+  done
+}
+
+installed_casks() {
+  if command -v brew >/dev/null 2>&1; then
+    brew list --cask -1 2>/dev/null || true
+  fi
+}
+
+managed_formula_names() {
+  local manifest
+  for manifest in "$CLEAN_ROOT"/packages/Brewfile.*; do
+    sed -nE 's/^[[:space:]]*brew[[:space:]]+"([^"]+)".*/\1/p' "$manifest"
+  done
+}
+
+managed_cask_names() {
+  local manifest cask
+  for manifest in "$CLEAN_ROOT"/packages/Brewfile.*; do
+    while IFS= read -r cask; do
+      printf '%s\n' "${cask##*/}"
+    done < <(sed -nE 's/^[[:space:]]*cask[[:space:]]+"([^"]+)".*/\1/p' "$manifest")
+  done
+}
+
+unmanaged_formulae() {
+  local managed="$1"
+  local formula
+  command -v brew >/dev/null 2>&1 || return 0
+  while IFS= read -r formula; do
+    [[ -n "$formula" ]] || continue
+    if ! grep -Fqx -- "$formula" <<<"$managed"; then
+      printf '%s\n' "$formula"
+    fi
+  done < <(brew leaves 2>/dev/null || true)
+}
+
+normalised_name_records() {
+  local candidate
+  while IFS= read -r candidate; do
+    [[ -n "$candidate" ]] || continue
+    printf '%s\t%s\n' "$(normalise_name "${candidate##*/}")" "$candidate"
+  done
+}
+
+matching_name() {
+  local needle="$1"
+  local candidates="$2"
+  local candidate normal_candidate
+  while IFS=$'\t' read -r normal_candidate candidate; do
+    [[ -n "$normal_candidate" ]] || continue
+    if [[ "$needle" == "$normal_candidate" || "$needle" == "$normal_candidate"* || "$normal_candidate" == "$needle"* ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done <<<"$candidates"
+  return 1
+}
+
+application_bundle_id() {
+  local application="$1"
+  local bundle_id
+  bundle_id="$(mdls -raw -name kMDItemCFBundleIdentifier "$application" 2>/dev/null || true)"
+  if [[ -z "$bundle_id" || "$bundle_id" == "(null)" ]]; then
+    bundle_id="$(defaults read "$application/Contents/Info.plist" CFBundleIdentifier 2>/dev/null || true)"
+  fi
+  printf '%s\n' "$bundle_id"
+}
+
+application_support_paths() {
+  local application="$1"
+  local app_name bundle_id candidate
+  app_name="$(basename "$application" .app)"
+  bundle_id="$(application_bundle_id "$application")"
+
+  for candidate in "$HOME/Library/Application Support/$app_name" "$HOME/Library/Logs/$app_name"; do
+    [[ -e "$candidate" || -L "$candidate" ]] && printf '%s\n' "$candidate"
+  done
+
+  [[ -n "$bundle_id" ]] || return 0
+  for candidate in \
+    "$HOME/Library/Caches/$bundle_id" \
+    "$HOME/Library/Containers/$bundle_id" \
+    "$HOME/Library/Application Scripts/$bundle_id" \
+    "$HOME/Library/Application Support/$bundle_id" \
+    "$HOME/Library/Group Containers/$bundle_id" \
+    "$HOME/Library/HTTPStorages/$bundle_id" \
+    "$HOME/Library/Preferences/$bundle_id.plist" \
+    "$HOME/Library/Saved Application State/$bundle_id.savedState" \
+    "$HOME/Library/WebKit/$bundle_id"; do
+    [[ -e "$candidate" || -L "$candidate" ]] && printf '%s\n' "$candidate"
+  done
+}
+
+clean_apps() {
+  local records="$work_dir/apps.tsv"
+  local managed casks raw_casks managed_casks associated_casks managed_formulae formulae application app_name normal_app cask bytes id selection line selected_file total count path scan_marker scan_pid running record_file formula formula_count
+  local -a application_dirs
+  : >"$records"
+
+  if [[ -n "${CLEAN_APPLICATION_DIRS:-}" ]]; then
+    IFS=':' read -r -a application_dirs <<<"$CLEAN_APPLICATION_DIRS"
+  else
+    application_dirs=("/Applications" "$HOME/Applications")
+  fi
+
+  scan_marker="$work_dir/apps-scan-complete"
+  (
+    trap 'printf "done\n" >"$scan_marker"' EXIT
+    # Homebrew can take a moment to answer these queries too, so keep it in
+    # the scan phase rather than leaving the terminal blank beforehand.
+    managed="$(managed_application_names | normalised_name_records)"
+    raw_casks="$(installed_casks)"
+    casks="$(printf '%s\n' "$raw_casks" | normalised_name_records)"
+    managed_casks="$(managed_cask_names)"
+    managed_formulae="$(managed_formula_names)"
+    formulae="$(unmanaged_formulae "$managed_formulae")"
+    id=0
+    running=0
+    for path in "${application_dirs[@]}"; do
+      [[ -d "$path" ]] || continue
+      for application in "$path"/*.app; do
+        app_name="$(basename "$application" .app)"
+        normal_app="$(normalise_name "$app_name")"
+        matching_name "$normal_app" "$managed" >/dev/null && continue
+        cask="$(matching_name "$normal_app" "$casks" || true)"
+        [[ -n "$cask" ]] || cask='-'
+        id=$((id + 1))
+        printf -v record_file '%s/app-record-%05d' "$work_dir" "$id"
+        (
+          bytes="$(path_size "$application")"
+          printf '%s\t%s\t%s\t%s\t%s — approximately %s%s\n' "$id" "$application" "$cask" "$bytes" "$app_name" "$(format_bytes "$bytes")" "$([[ "$cask" != '-' ]] && printf ' (Homebrew: %s)' "$cask")" >"$record_file"
+        ) &
+        running=$((running + 1))
+        if [[ "$running" -ge 8 ]]; then
+          wait
+          running=0
+        fi
+      done
+    done
+    wait
+    for record_file in "$work_dir"/app-record-*; do
+      [[ -f "$record_file" ]] && cat "$record_file" >>"$records"
+    done
+    associated_casks="$(awk -F '\t' '$3 != "-" { print $3 }' "$records")"
+    while IFS= read -r cask; do
+      [[ -n "$cask" ]] || continue
+      grep -Fqx -- "$cask" <<<"$managed_casks" && continue
+      grep -Fqx -- "$cask" <<<"$associated_casks" && continue
+      id=$((id + 1))
+      printf '%s\tbrew-cask\t%s\t0\tHomebrew cask: %s\n' "$id" "$cask" "$cask" >>"$records"
+    done <<<"$raw_casks"
+    while IFS= read -r formula; do
+      [[ -n "$formula" ]] || continue
+      id=$((id + 1))
+      printf '%s\tbrew-formula\t%s\t0\tHomebrew tool: %s\n' "$id" "$formula" "$formula" >>"$records"
+    done <<<"$formulae"
+  ) &
+  scan_pid=$!
+  wait_for_scan "$scan_pid" "$scan_marker" 'Finding applications and estimating their sizes…'
+
+  if [[ ! -s "$records" ]]; then
+    gum style --foreground 2 'No applications outside the managed Brewfiles were found.'
+    return 0
+  fi
+
+  if ! selection="$(choose_records "$records" 18 'Applications not managed by your Brewfiles')"; then
+    return 0
+  fi
+  [[ -n "$selection" ]] || return 0
+  selected_file="$work_dir/apps-selected.tsv"
+  : >"$selected_file"
+  while IFS= read -r line; do
+    id="$line"
+    awk -F '\t' -v id="$id" '$1 == id' "$records" >>"$selected_file"
+  done <<<"$selection"
+  count="$(wc -l <"$selected_file" | tr -d ' ')"
+  total="$(awk -F '\t' '{ sum += $4 } END { print sum + 0 }' "$selected_file")"
+  formula_count="$(awk -F '\t' '$2 == "brew-formula" || $2 == "brew-cask" { count++ } END { print count + 0 }' "$selected_file")"
+  confirm_removal "$count" "$total" "$formula_count" || return 0
+
+  while IFS=$'\t' read -r id application cask bytes line; do
+    if [[ "$application" == "brew-formula" ]]; then
+      run_brew_uninstall "$cask"
+    elif [[ "$application" == "brew-cask" ]]; then
+      run_brew_uninstall --cask --zap --force "$cask"
+    elif [[ "$cask" != '-' ]]; then
+      run_brew_uninstall --cask --zap --force "$cask"
+    else
+      while IFS= read -r path; do
+        [[ -n "$path" ]] && move_to_trash "$path" 'move application support data to Trash'
+      done < <(application_support_paths "$application")
+      trash_application "$application"
+    fi
+  done <"$selected_file"
+  gum style --foreground 2 "Cleanup complete. Processed approximately $(format_bytes "$total"); items in Trash remain recoverable until it is emptied."
+  report_cleanup_failures
+}
+
+add_file_record() {
+  local records="$1"
+  local id="$2"
+  local kind="$3"
+  local path="$4"
+  local label
+  label="$(basename "$path")"
+  printf '%s\t%s\t%s\t-1\t%s\n' "$id" "$kind" "$path" "$label" >>"$records"
+}
+
+build_folder_summaries() {
+  local records="$1"
+  local summary="$2"
+  local total_file="$3"
+  local sizes id kind folder bytes label size file relative shown count total
+  : >"$summary"
+  total=0
+
+  while IFS=$'\t' read -r id kind folder bytes label; do
+    bytes="$(path_size "$folder")"
+    count="$(file_count "$folder")"
+    total=$((total + bytes))
+    printf '%s — %s files, %s\n' "$label" "$count" "$(format_bytes "$bytes")" >>"$summary"
+    sizes="$work_dir/folder-files-$id"
+    { find "$folder" -type f -exec stat -f $'%z\t%N' {} + 2>/dev/null || true; } |
+      sort -t $'\t' -k1,1nr >"$sizes"
+    shown=0
+    while IFS=$'\t' read -r size file; do
+      [[ -n "$file" ]] || continue
+      relative="${file#"$folder/"}"
+      printf '    %s — %s\n' "$relative" "$(format_bytes "$size")" >>"$summary"
+      shown=$((shown + 1))
+      [[ "$shown" -eq 3 ]] && break
+    done <"$sizes"
+    if [[ "$shown" -eq 0 ]]; then
+      printf '    No files\n' >>"$summary"
+    fi
+    printf '\n' >>"$summary"
+  done <"$records"
+  printf '%s\n' "$total" >"$total_file"
+}
+
+clean_files() {
+  local records="$work_dir/files.tsv"
+  local selected_targets="$work_dir/file-targets"
+  local selected_file="$work_dir/folders-selected.tsv"
+  local folder id selection line kind path bytes label total count scan_marker scan_pid summary total_file
+  local -a folders
+  : >"$records"
+  : >"$selected_targets"
+  : >"$selected_file"
+
+  if [[ -n "${CLEAN_USER_FOLDERS:-}" ]]; then
+    IFS=':' read -r -a folders <<<"$CLEAN_USER_FOLDERS"
+  else
+    folders=("$HOME/Downloads" "$HOME/Desktop" "$HOME/Documents")
+  fi
+
+  id=0
+  for folder in "${folders[@]}"; do
+    [[ -d "$folder" ]] || continue
+    id=$((id + 1))
+    add_file_record "$records" "$id" contents "$folder"
+  done
+
+  if [[ ! -s "$records" ]]; then
+    gum style --foreground 2 'Downloads, Desktop, and Documents are not present.'
+    return 0
+  fi
+  if ! selection="$(choose_records "$records" 8 'Select folder contents to move to Trash')"; then
+    return 0
+  fi
+  [[ -n "$selection" ]] || return 0
+
+  while IFS= read -r line; do
+    id="$line"
+    awk -F '\t' -v id="$id" '$1 == id' "$records" >>"$selected_file"
+  done <<<"$selection"
+
+  summary="$work_dir/folder-summary"
+  total_file="$work_dir/folder-total"
+  scan_marker="$work_dir/folder-summary-complete"
+  (
+    trap 'printf "done\n" >"$scan_marker"' EXIT
+    build_folder_summaries "$selected_file" "$summary" "$total_file"
+  ) &
+  scan_pid=$!
+  wait_for_scan "$scan_pid" "$scan_marker" 'Calculating selected folders and finding their largest files…'
+  gum style --border rounded --padding '0 1' "$(<"$summary")"
+
+  while IFS=$'\t' read -r id kind path bytes label; do
+    [[ "$kind" == "contents" ]] || continue
+    find "$path" -mindepth 1 -maxdepth 1 -print >>"$selected_targets"
+  done <"$selected_file"
+
+  sort -u "$selected_targets" -o "$selected_targets"
+  [[ -s "$selected_targets" ]] || return 0
+  total="$(<"$total_file")"
+  count="$(wc -l <"$selected_targets" | tr -d ' ')"
+  confirm_removal "$count" "$total" || return 0
+  while IFS= read -r path; do
+    move_to_trash "$path"
+  done <"$selected_targets"
+  gum style --foreground 2 "Cleanup complete. Moved approximately $(format_bytes "$total") to Trash."
+  report_cleanup_failures
+}
+
+clean_trash() {
+  local trash_directory="$HOME/.Trash"
+  local scan_marker="$work_dir/trash-size-complete"
+  local size_file="$work_dir/trash-size"
+  local scan_pid bytes
+
+  if [[ ! -d "$trash_directory" ]] || [[ -z "$(find "$trash_directory" -mindepth 1 -print -quit 2>/dev/null)" ]]; then
+    gum style --foreground 2 'Trash is already empty.'
+    return 0
+  fi
+
+  (
+    trap 'printf "done\n" >"$scan_marker"' EXIT
+    path_size "$trash_directory" >"$size_file"
+  ) &
+  scan_pid=$!
+  wait_for_scan "$scan_pid" "$scan_marker" 'Calculating Trash size…'
+  bytes="$(<"$size_file")"
+
+  if ! confirm_dialog "Permanently empty approximately $(format_bytes "$bytes") from Trash? This cannot be undone."; then
+    return 0
+  fi
+  run_cleanup osascript -e 'tell application "Finder" to empty the trash'
+  gum style --foreground 2 "Trash emptied. Reclaimed approximately $(format_bytes "$bytes")."
+  report_cleanup_failures
+}
+
+human_size_bytes() {
+  local value="${1%% *}"
+  awk -v size="$value" 'BEGIN {
+    gsub(/\(.*/, "", size)
+    match(size, /^[0-9.]+/); number = substr(size, RSTART, RLENGTH) + 0
+    unit = toupper(substr(size, RLENGTH + 1))
+    if (unit == "KB" || unit == "KIB") number *= 1000
+    else if (unit == "MB" || unit == "MIB") number *= 1000000
+    else if (unit == "GB" || unit == "GIB") number *= 1000000000
+    else if (unit == "TB" || unit == "TIB") number *= 1000000000000
+    printf "%.0f", number
+  }'
+}
+
+add_system_record() {
+  local records="$1"
+  local id="$2"
+  local action="$3"
+  local target="$4"
+  local bytes="$5"
+  local name="$6"
+  [[ -n "$target" ]] || target='-'
+  if [[ "$bytes" -ge 0 ]]; then
+    printf '%s\t%s\t%s\t%s\t%s — %s\n' "$id" "$action" "$target" "$bytes" "$name" "$(format_bytes "$bytes")" >>"$records"
+  else
+    printf '%s\t%s\t%s\t%s\t%s\n' "$id" "$action" "$target" "$bytes" "$name" >>"$records"
+  fi
+}
+
+SYSTEM_RECORD_ID=0
+
+add_system_path() {
+  local records="$1"
+  local action="$2"
+  local path="$3"
+  local name="$4"
+  [[ -e "$path" || -L "$path" ]] || return 0
+  if [[ -d "$path" ]] && [[ -z "$(find "$path" -mindepth 1 \( -type f -o -type l \) -print -quit 2>/dev/null)" ]]; then
+    return 0
+  fi
+  SYSTEM_RECORD_ID=$((SYSTEM_RECORD_ID + 1))
+  add_system_record "$records" "$SYSTEM_RECORD_ID" "$action" "$path" -1 "$name"
+}
+
+add_system_path_group() {
+  local records="$1"
+  local paths_file="$2"
+  local name="$3"
+  shift 3
+  local path
+  : >"$paths_file"
+  for path in "$@"; do
+    [[ -e "$path" || -L "$path" ]] || continue
+    if [[ -d "$path" ]] && [[ -z "$(find "$path" -mindepth 1 \( -type f -o -type l \) -print -quit 2>/dev/null)" ]]; then
+      continue
+    fi
+    printf '%s\n' "$path" >>"$paths_file"
+  done
+  [[ -s "$paths_file" ]] || return 0
+  SYSTEM_RECORD_ID=$((SYSTEM_RECORD_ID + 1))
+  add_system_record "$records" "$SYSTEM_RECORD_ID" trash-list "$paths_file" -1 "$name"
+}
+
+system_selected_size() {
+  local action="$1"
+  local target="$2"
+  local known_bytes="$3"
+  if [[ "$known_bytes" -ge 0 ]]; then
+    printf '%s\n' "$known_bytes"
+  elif [[ "$action" == "simulator" ]]; then
+    path_size "$HOME/Library/Developer/CoreSimulator/Devices/$target"
+  elif [[ "$action" == "simulator-list" ]]; then
+    while IFS= read -r udid; do
+      path_size "$HOME/Library/Developer/CoreSimulator/Devices/$udid"
+    done <"$target" | awk '{ total += $1 } END { print total + 0 }'
+  elif [[ "$action" == "trash-list" ]]; then
+    while IFS= read -r path; do
+      path_size "$path"
+    done <"$target" | awk '{ total += $1 } END { print total + 0 }'
+  else
+    path_size "$target"
+  fi
+}
+
+system_project_roots() {
+  local -a roots
+  if [[ -n "${CLEAN_PROJECT_ROOTS:-}" ]]; then
+    IFS=':' read -r -a roots <<<"$CLEAN_PROJECT_ROOTS"
+  else
+    roots=("$HOME/Code" "$HOME/Developer" "$HOME/Projects" "$HOME/Sites" "$HOME/src")
+  fi
+  printf '%s\n' "${roots[@]}"
+}
+
+clean_system() {
+  local records="$work_dir/system.tsv"
+  local id cache path bytes docker_rows docker_type reclaimable action selection line selected_file total count target name udid root profile scan_marker scan_pid total_file simulator_ids simulator_count simulator_label autoremove_output autoremove_count confirmation_note
+  local -a vm_paths developer_cache_paths
+  : >"$records"
+  scan_marker="$work_dir/system-scan-complete"
+  (
+    trap 'printf "done\n" >"$scan_marker"' EXIT
+    id=0
+
+    if command -v docker >/dev/null 2>&1; then
+      docker_rows="$(docker system df --format '{{.Type}}\t{{.Reclaimable}}' 2>/dev/null || true)"
+      while IFS=$'\t' read -r docker_type reclaimable; do
+        [[ -n "$docker_type" ]] || continue
+        bytes="$(human_size_bytes "$reclaimable")"
+        [[ "$bytes" -gt 0 ]] || continue
+        case "$docker_type" in
+          Images) action=docker-images ;;
+          Containers) action=docker-containers ;;
+          "Local Volumes") action=docker-volumes ;;
+          "Build Cache") action=docker-build ;;
+          *) continue ;;
+        esac
+        id=$((id + 1))
+        add_system_record "$records" "$id" "$action" '' "$bytes" "Docker unused $docker_type"
+      done <<<"$docker_rows"
+    fi
+
+    if command -v brew >/dev/null 2>&1; then
+      autoremove_output="$(brew autoremove --dry-run 2>/dev/null || true)"
+      if [[ "$autoremove_output" =~ Would\ autoremove\ ([0-9]+) ]]; then
+        autoremove_count="${BASH_REMATCH[1]}"
+        id=$((id + 1))
+        add_system_record "$records" "$id" brew-autoremove '' -1 "Unused Homebrew dependencies ($autoremove_count formula(s))"
+      fi
+    fi
+
+    for path in \
+      "$HOME/Library/Developer/Xcode/DerivedData" \
+      "$HOME/Library/Developer/Xcode/Archives" \
+      "$HOME/Library/Developer/Xcode/iOS DeviceSupport"; do
+      SYSTEM_RECORD_ID="$id"
+      add_system_path "$records" trash "$path" "Xcode $(basename "$path")"
+      id="$SYSTEM_RECORD_ID"
+    done
+
+    if command -v xcrun >/dev/null 2>&1; then
+      simulator_ids="$work_dir/unavailable-simulators"
+      : >"$simulator_ids"
+      while IFS=$'\t' read -r udid name; do
+        [[ -n "$udid" ]] || continue
+        path="$HOME/Library/Developer/CoreSimulator/Devices/$udid"
+        [[ -n "$(find "$path" -mindepth 1 \( -type f -o -type l \) -print -quit 2>/dev/null)" ]] || continue
+        printf '%s\n' "$udid" >>"$simulator_ids"
+      done < <(xcrun simctl list devices unavailable 2>/dev/null | sed -nE 's/^[[:space:]]*([^()].*) \(([0-9A-F-]{36})\).*/\2\t\1/p')
+      if [[ -s "$simulator_ids" ]]; then
+        simulator_count="$(wc -l <"$simulator_ids" | tr -d ' ')"
+        simulator_label='devices'
+        [[ "$simulator_count" -eq 1 ]] && simulator_label='device'
+        id=$((id + 1))
+        add_system_record "$records" "$id" simulator-list "$simulator_ids" -1 "All unavailable simulators ($simulator_count $simulator_label)"
+      fi
+    fi
+
+    for path in "$HOME"/.android/avd/*.avd; do
+      SYSTEM_RECORD_ID="$id"
+      add_system_path "$records" android-avd "$path" "Android emulator: $(basename "$path" .avd)"
+      id="$SYSTEM_RECORD_ID"
+    done
+
+    vm_paths=(
+      "$HOME"/Parallels/*.pvm
+      "$HOME"/Documents/Parallels/*.pvm
+      "$HOME"/Virtual\ Machines.localized/*.vmwarevm
+      "$HOME"/Documents/Virtual\ Machines.localized/*.vmwarevm
+      "$HOME"/Library/Containers/com.utmapp.UTM/Data/Documents/*.utm
+      "$HOME"/Library/Application\ Support/UTM/*.utm
+    )
+    if [[ ${#vm_paths[@]} -gt 0 ]]; then
+      for path in "${vm_paths[@]}"; do
+        SYSTEM_RECORD_ID="$id"
+        add_system_path "$records" trash "$path" "Virtual machine: $(basename "$path")"
+        id="$SYSTEM_RECORD_ID"
+      done
+    fi
+
+    for path in "$HOME"/.lima/*; do
+      [[ -d "$path" && "$(basename "$path")" != "_config" ]] || continue
+      SYSTEM_RECORD_ID="$id"
+      add_system_path "$records" lima "$path" "Lima VM: $(basename "$path")"
+      id="$SYSTEM_RECORD_ID"
+    done
+
+    for path in "$HOME"/.colima/*; do
+      [[ -d "$path" && "$(basename "$path")" != "_lima" ]] || continue
+      SYSTEM_RECORD_ID="$id"
+      add_system_path "$records" colima "$path" "Colima profile: $(basename "$path")"
+      id="$SYSTEM_RECORD_ID"
+    done
+
+    SYSTEM_RECORD_ID="$id"
+
+    # macOS and personal application data.
+    add_system_path "$records" trash "$HOME/Library/Logs" 'User application logs and diagnostic reports'
+    add_system_path "$records" trash "$HOME/Library/Application Support/CrashReporter" 'Application crash reports'
+    add_system_path "$records" trash "$HOME/Library/Containers/com.apple.mail/Data/Library/Mail Downloads" 'Apple Mail downloads'
+    add_system_path "$records" trash "$HOME/Library/Messages/Attachments" 'Messages attachments'
+
+    for path in "$HOME/Library/Application Support/MobileSync/Backup"/*; do
+      add_system_path "$records" trash "$path" "iPhone or iPad backup: $(basename "$path")"
+    done
+    for path in /Applications/Install\ macOS*.app "$HOME"/Applications/Install\ macOS*.app; do
+      add_system_path "$records" trash "$path" "macOS installer: $(basename "$path" .app)"
+    done
+
+    # Keep caches intentionally broad: one safe choice for applications and one
+    # for developer tooling, instead of an overwhelming list of subdirectories.
+    add_system_path_group "$records" "$work_dir/application-cache-paths" 'All application caches' \
+      "$HOME/Library/Caches" \
+      "$HOME/Library/Containers/com.apple.Safari/Data/Library/Caches"
+
+    developer_cache_paths=(
+      "$HOME/.cache"
+      "$HOME/.npm/_cacache"
+      "$HOME/Library/pnpm/store"
+      "$HOME/.pnpm-store"
+      "$HOME/.bun/install/cache"
+      "$HOME/.gradle/caches"
+      "$HOME/.gradle/wrapper/dists"
+      "$HOME/.m2/repository"
+      "$HOME/.cargo/registry"
+      "$HOME/.cargo/git"
+      "$HOME/.cocoapods/repos"
+      "$HOME/.nvm/.cache"
+      "$HOME/.sdkman/archives"
+      "$HOME/.sdkman/tmp"
+      "$HOME/.nuget/packages"
+      "$HOME/Library/Application Support/Code/Cache"
+      "$HOME/Library/Application Support/Code/CachedData"
+      "$HOME/Library/Application Support/Code/CachedExtensionVSIXs"
+      "$HOME/Library/Application Support/Code/Code Cache"
+      "$HOME/Library/Application Support/Code/GPUCache"
+      "$HOME/Library/Application Support/Code/logs"
+      "$HOME/Library/Developer/Xcode/DocumentationCache"
+      "$HOME/Library/Developer/Xcode/DocumentationIndex"
+      "$HOME/.android/build-cache"
+    )
+    if command -v go >/dev/null 2>&1; then
+      path="$(go env GOMODCACHE 2>/dev/null || true)"
+      [[ -n "$path" ]] && developer_cache_paths+=("$path")
+    fi
+    add_system_path_group "$records" "$work_dir/developer-cache-paths" 'All developer caches' "${developer_cache_paths[@]}"
+
+    # Installed Android system images are shown individually.
+    path="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}}"
+    for cache in "$path"/system-images/*/*/*; do
+      add_system_path "$records" trash "$cache" "Android system image: ${cache#"$path/system-images/"}"
+    done
+
+    # Common project outputs, limited to conventional source-code roots.
+    while IFS= read -r root; do
+      [[ -d "$root" ]] || continue
+      while IFS= read -r path; do
+        add_system_path "$records" trash "$path" "Project artifact: ${path#"$root/"}"
+      done < <(find "$root" -type d \( -name .git -o -name .idea \) -prune -o -type d \( -name node_modules -o -name .gradle -o -name target -o -name build -o -name dist -o -name .next \) -print -prune 2>/dev/null)
+    done < <(system_project_roots)
+
+    id="$SYSTEM_RECORD_ID"
+  ) &
+  scan_pid=$!
+  wait_for_scan "$scan_pid" "$scan_marker" 'Finding cleanable system data…'
+
+  if [[ ! -s "$records" ]]; then
+    gum style --foreground 2 'No removable system data was found.'
+    return 0
+  fi
+  if ! selection="$(choose_records "$records" 18 'System — select data to remove')"; then
+    return 0
+  fi
+  [[ -n "$selection" ]] || return 0
+  selected_file="$work_dir/system-selected.tsv"
+  : >"$selected_file"
+  while IFS= read -r line; do
+    id="$line"
+    awk -F '\t' -v id="$id" '$1 == id' "$records" >>"$selected_file"
+  done <<<"$selection"
+  count="$(wc -l <"$selected_file" | tr -d ' ')"
+  total_file="$work_dir/system-selected-total"
+  scan_marker="$work_dir/system-size-scan-complete"
+  (
+    trap 'printf "done\n" >"$scan_marker"' EXIT
+    total=0
+    while IFS=$'\t' read -r id action target bytes line; do
+      total=$((total + $(system_selected_size "$action" "$target" "$bytes")))
+    done <"$selected_file"
+    printf '%s\n' "$total" >"$total_file"
+  ) &
+  scan_pid=$!
+  wait_for_scan "$scan_pid" "$scan_marker" 'Calculating the selected system data…'
+  total="$(<"$total_file")"
+  confirmation_note=''
+  if awk -F '\t' '$2 == "brew-autoremove" { found = 1 } END { exit !found }' "$selected_file"; then
+    confirmation_note='Unused Homebrew dependencies are included but not size-estimated.'
+  fi
+  confirm_removal "$count" "$total" 0 "$confirmation_note" || return 0
+
+  while IFS=$'\t' read -r id action target bytes line; do
+    case "$action" in
+      docker-images) run_cleanup docker image prune --all --force ;;
+      docker-containers) run_cleanup docker container prune --force ;;
+      docker-volumes) run_cleanup docker volume prune --all --force ;;
+      docker-build) run_cleanup docker builder prune --all --force ;;
+      brew-autoremove) run_cleanup brew autoremove ;;
+      trash-list)
+        while IFS= read -r path; do
+          move_to_trash "$path"
+        done <"$target"
+        ;;
+      simulator-list)
+        while IFS= read -r udid; do
+          run_cleanup xcrun simctl delete "$udid"
+        done <"$target"
+        ;;
+      simulator) run_cleanup xcrun simctl delete "$target" ;;
+      android-avd)
+        move_to_trash "$target" 'move Android emulator to Trash'
+        move_to_trash "${target%.avd}.ini" 'move Android emulator metadata to Trash'
+        ;;
+      lima)
+        if command -v limactl >/dev/null 2>&1; then
+          run_cleanup limactl delete --force "$(basename "$target")"
+        else
+          move_to_trash "$target" 'move Lima VM to Trash'
+        fi
+        ;;
+      colima)
+        profile="$(basename "$target")"
+        if command -v colima >/dev/null 2>&1; then
+          run_cleanup colima delete --force "$profile"
+        else
+          move_to_trash "$target" 'move Colima profile to Trash'
+        fi
+        ;;
+      trash) move_to_trash "$target" ;;
+    esac
+  done <"$selected_file"
+  gum style --foreground 2 "System cleanup complete. Processed approximately $(format_bytes "$total"); items left in Trash remain recoverable until it is emptied."
+  report_cleanup_failures
+}
+
+command_name=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    apps | files | system | trash)
+      [[ -z "$command_name" ]] || die 'choose only one cleaner'
+      command_name="$1"
+      ;;
+    --dry-run)
+      CLEAN_DRY_RUN=1
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *) die "unknown option or cleaner: $1" ;;
+  esac
+  shift
+done
+
+command -v gum >/dev/null 2>&1 || die 'gum is required; run tom setup home --only packages (or the work equivalent)'
+command -v trash >/dev/null 2>&1 || die 'trash is required; run tom setup home --only packages (or the work equivalent)'
+
+if [[ -z "$command_name" ]]; then
+  choice="$(printf '%s\n' 'Applications' 'Files' 'System' 'Trash' | gum choose --header 'What would you like to clean?')" || exit 0
+  case "$choice" in
+    Applications) command_name=apps ;;
+    Files) command_name=files ;;
+    System) command_name=system ;;
+    Trash) command_name=trash ;;
+    *) exit 0 ;;
+  esac
+fi
+
+case "$command_name" in
+  apps) clean_apps ;;
+  files) clean_files ;;
+  system) clean_system ;;
+  trash) clean_trash ;;
+esac

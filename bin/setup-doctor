@@ -106,7 +106,7 @@ else
   fail_check "Homebrew is not installed"
 fi
 
-for command_name in git lazygit nvim trash zoxide aerospace mise zed; do
+for command_name in git gum lazygit nvim trash zoxide aerospace mise zed; do
   if command -v "$command_name" >/dev/null 2>&1; then
     pass_check "$command_name is available"
   else
@@ -114,7 +114,7 @@ for command_name in git lazygit nvim trash zoxide aerospace mise zed; do
   fi
 done
 
-login_commands=(brew git lazygit nvim trash zoxide aerospace mise node zed tom)
+login_commands=(brew git gum lazygit nvim trash zoxide aerospace mise node zed tom)
 if [[ "$profile" == "work" ]]; then
   login_commands+=(java gradle terraform)
 fi

@@ -15,8 +15,8 @@ jobs:
 
       - name: Check shell scripts
         run: |
-          shellcheck bootstrap.sh bin/setup bin/setup-doctor bin/tom bin/update config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
-          shfmt -d -i 2 -ci bootstrap.sh bin/setup bin/setup-doctor bin/tom bin/update config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
+          shellcheck bootstrap.sh bin/clean bin/setup bin/setup-doctor bin/tom bin/update config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
+          shfmt -d -i 2 -ci bootstrap.sh bin/clean bin/setup bin/setup-doctor bin/tom bin/update config/osx/config lib/setup/*.sh lib/setup/phases/*.sh tests/*.sh
 
       - name: Check package manifests
         run: |
@@ -30,7 +30,9 @@ jobs:
           find config/nvim -name '*.lua' -exec luac -p {} +
 
       - name: Run setup tests
-        run: tests/setup_test.sh
+        run: |
+          tests/setup_test.sh
+          tests/clean_test.sh
 
   secrets:
     runs-on: ubuntu-latest

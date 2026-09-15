@@ -24,12 +24,15 @@ tom setup work --only packages,dotfiles
 tom setup-doctor
 ```
 
-AeroSpace is distributed through its publisher's Homebrew tap. Its cask is
-trusted explicitly in the Brewfile; the setup never trusts the entire tap.
+Homebrew taps declared in the managed Brewfiles are trusted as part of setup.
+This avoids interactive trust prompts while keeping trust limited to taps that
+are explicitly part of this repository.
 
 Core packages live in `packages/Brewfile.core`. Profile-specific applications
-live in `packages/Brewfile.home` and `packages/Brewfile.work`. Existing
-dotfiles are backed up below `~/.local/state/setup/backups` before replacement.
+live in `packages/Brewfile.home` and `packages/Brewfile.work`. The packages
+phase accepts the Xcode license before installing packages, so it may ask for
+your administrator password. Existing dotfiles are backed up below
+`~/.local/state/setup/backups` before replacement.
 
 Mise installs and switches developer runtimes. Both profiles use Node 26; the
 work profile also uses OpenJDK 25, Gradle 9, and Terraform 1. Project-level
@@ -69,6 +72,28 @@ installed), and Neovim plugins:
 tom update
 tom update --dry-run
 ```
+
+To interactively reclaim space from unmanaged applications, personal files,
+or system and developer data, use:
+
+```sh
+tom clean
+tom clean apps
+tom clean files
+tom clean system
+tom clean trash
+```
+
+The cleaner displays an estimated size, supports multi-selection, and always
+asks for confirmation. Applications declared in any managed Brewfile are
+excluded. Application estimates use the app bundles so the list loads quickly;
+supporting data is still removed when applicable. Personal files and unmanaged
+application data are moved to the macOS
+Trash; Homebrew casks use `brew uninstall --cask --zap`. System cleanup covers
+macOS and application data alongside developer caches, containers, emulators,
+and virtual machines. Empty categories are omitted. Emptying Trash is a
+separate action with its own irreversible-operation confirmation.
+Use `--dry-run` to preview the chosen cleanup without changing anything.
 
 ## Photos and documents backup
 

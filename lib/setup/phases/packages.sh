@@ -30,6 +30,10 @@ setup_phase_packages() {
   local brew_bin
   brew_bin="$(brew_command)" || die "Homebrew is required before the packages phase"
 
+  # Homebrew invokes Xcode tooling for some packages; accepting this up front
+  # avoids a late, opaque failure from inside `brew bundle`.
+  run sudo xcodebuild -license accept
+
   run "$brew_bin" bundle --file "$SETUP_ROOT/packages/Brewfile.core"
   run "$brew_bin" bundle --file "$SETUP_ROOT/packages/Brewfile.$SETUP_PROFILE"
 
