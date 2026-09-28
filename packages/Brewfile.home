@@ -1,6 +1,6 @@
 # Personal, media, and creative applications.
 cask "affinity"
-cask "cleanshot"
+cask "cleanshot" # TODO: I only have license for CleanShot 4
 cask "discord"
 cask "spotify"
 cask "audacity"

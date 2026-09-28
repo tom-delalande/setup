@@ -3,7 +3,7 @@
 	email = 80664757+tom-delalande@users.noreply.github.com
 
 [core]
-    editor = nvim
+  editor = nvim
 	autocrlf = input
 	excludesfile = ~/.config/git/ignore
 

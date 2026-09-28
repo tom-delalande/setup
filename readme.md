@@ -42,8 +42,9 @@ Oh My Zsh is installed non-interactively in `~/.oh-my-zsh` and loaded from the
 managed Zsh configuration with the `robbyrussell` theme and Git plugin.
 
 The default macOS phase preserves existing Dock applications and tracking
-speeds. To apply the complete opinionated configuration, including clearing the
-Dock and using the fast mouse and trackpad speeds:
+speeds. It also configures Maccy and Itsypad to open visibly at login. To apply
+the complete opinionated configuration, including clearing the Dock and using
+the fast mouse and trackpad speeds:
 
 ```sh
 tom setup home --include-opinionated
@@ -210,12 +211,12 @@ exempt.
 | `Option-F` | Open `~/Documents` in Finder on workspace 4 |
 | `Option-B` | Open Firefox on workspace 2 |
 | `Option-I` | Open Spotify on workspace 3 |
-| `Option-N` | Open Neovim in Ghostty on workspace 5 |
+| `Option-N` | Open Itsypad, or bring it to the current workspace |
 | `Option-S` | Open `nvim +DBUI` in Ghostty on workspace 5 |
 | `Option-G` | Open SourceTree on workspace 4 |
 | `Option-O` | Open Obsidian on workspace 4 |
 | `Option-P` | Open TickTick on workspace 3 |
-| `Option-R` | Switch to workspace 7 |
+| `Option-R` | Open Screen Sharing on workspace 7 |
 | `Option-Z` | Open Bitwarden on workspace 4 |
 | `Option-A` | Open ChatGPT in Firefox on workspace 2 |
 | `Option-C` | Open Google Calendar in Firefox on workspace 2 |

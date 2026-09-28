@@ -123,6 +123,10 @@ safe_defaults="$(SETUP_ROOT="$TEST_ROOT" "$TEST_ROOT/config/osx/config" --dry-ru
 if printf '%s\n' "$safe_defaults" | grep -q 'persistent-apps'; then
   fail "safe macOS defaults clear the Dock"
 fi
+for login_item in Maccy; do
+  printf '%s\n' "$safe_defaults" | grep -q "login item \\\"$login_item\\\"" ||
+    fail "$login_item is not configured to open at login"
+done
 
 opinionated_defaults="$(SETUP_ROOT="$TEST_ROOT" "$TEST_ROOT/config/osx/config" --dry-run --opinionated)"
 printf '%s\n' "$opinionated_defaults" | grep -q 'persistent-apps' ||

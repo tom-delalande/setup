@@ -31,6 +31,20 @@ run() {
   fi
 }
 
+ensure_login_item() {
+  local app_name="$1"
+  local app_path="/Applications/$app_name.app"
+  local script
+
+  if [[ "$dry_run" == "0" && ! -d "$app_path" ]]; then
+    printf 'Skipping login item for %s: %s is not installed.\n' "$app_name" "$app_path" >&2
+    return
+  fi
+
+  printf -v script 'tell application "System Events"\n  if exists login item "%s" then\n    set hidden of login item "%s" to false\n  else\n    make login item at end with properties {path:"%s", hidden:false}\n  end if\nend tell' "$app_name" "$app_name" "$app_path"
+  run osascript -e "$script"
+}
+
 # Keyboard, saving, spelling, and screenshots.
 run defaults write NSGlobalDomain InitialKeyRepeat -int 20
 run defaults write NSGlobalDomain KeyRepeat -int 1
@@ -51,6 +65,9 @@ run defaults write com.apple.dock orientation -string right
 run defaults write com.apple.dock autohide -bool true
 run defaults write com.apple.dock autohide-delay -float 0.0
 run osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to true'
+
+# Keep the clipboard and scratchpad utilities available in every user session.
+ensure_login_item "Maccy"
 
 # These settings are deliberately opt-in because they are unusually aggressive.
 if [[ "$opinionated" == "1" ]]; then
