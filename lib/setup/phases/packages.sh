@@ -34,8 +34,18 @@ setup_phase_packages() {
   # avoids a late, opaque failure from inside `brew bundle`.
   run sudo xcodebuild -license accept
 
+  # Migrate the old unversioned CleanShot cask before installing our pinned
+  # version 4 cask. Uninstalling without --zap preserves CleanShot's settings.
+  if [[ "$SETUP_PROFILE" == "home" ]] && "$brew_bin" list --cask cleanshot >/dev/null 2>&1; then
+    run "$brew_bin" uninstall --cask cleanshot
+  fi
+
   run "$brew_bin" bundle --file "$SETUP_ROOT/packages/Brewfile.core"
   run "$brew_bin" bundle --file "$SETUP_ROOT/packages/Brewfile.$SETUP_PROFILE"
+
+  if [[ "$SETUP_PROFILE" == "home" ]]; then
+    run "$brew_bin" install --cask "$SETUP_ROOT/Casks/cleanshot@4.rb"
+  fi
 
   local mise_config="$SETUP_ROOT/config/mise/$SETUP_PROFILE.toml"
   if [[ "$SETUP_DRY_RUN" == "1" ]]; then

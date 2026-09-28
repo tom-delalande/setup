@@ -102,6 +102,13 @@ if [[ -n "$brew_bin" ]]; then
   else
     fail_check "$profile packages are missing or outdated"
   fi
+  if [[ "$profile" == "home" ]]; then
+    if "$brew_bin" list --cask --versions cleanshot@4 2>/dev/null | grep -q '^cleanshot@4 4\.8\.11$'; then
+      pass_check "CleanShot X 4.8.11 is installed"
+    else
+      fail_check "CleanShot X 4.8.11 is missing"
+    fi
+  fi
 else
   fail_check "Homebrew is not installed"
 fi

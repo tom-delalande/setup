@@ -34,6 +34,12 @@ phase accepts the Xcode license before installing packages, so it may ask for
 your administrator password. Existing dotfiles are backed up below
 `~/.local/state/setup/backups` before replacement.
 
+The home profile installs CleanShot X 4.8.11 from the official versioned
+download using this repository's cask. It replaces the old unversioned cask
+without deleting CleanShot settings, and disables in-app update checks so the
+licensed version stays on 4.x. The version and checksum are pinned in the cask;
+update both when moving to a later 4.x release.
+
 Mise installs and switches developer runtimes. Both profiles use Node 26; the
 work profile also uses OpenJDK 25, Gradle 9, and Terraform 1. Project-level
 `mise.toml` files can override these global defaults automatically.
@@ -211,7 +217,6 @@ exempt.
 | `Option-F` | Open `~/Documents` in Finder on workspace 4 |
 | `Option-B` | Open Firefox on workspace 2 |
 | `Option-I` | Open Spotify on workspace 3 |
-| `Option-N` | Open Itsypad, or bring it to the current workspace |
 | `Option-S` | Open `nvim +DBUI` in Ghostty on workspace 5 |
 | `Option-G` | Open SourceTree on workspace 4 |
 | `Option-O` | Open Obsidian on workspace 4 |

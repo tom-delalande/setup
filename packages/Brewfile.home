@@ -1,6 +1,6 @@
 # Personal, media, and creative applications.
 cask "affinity"
-cask "cleanshot" # TODO: I only have license for CleanShot 4
+# CleanShot X 4 is installed from the pinned local cask by setup packages.
 cask "discord"
 cask "spotify"
 cask "audacity"
