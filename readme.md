@@ -207,7 +207,8 @@ accordion layout by default, with a small part of adjacent windows kept visible.
 Apps are routed when AeroSpace detects a new window, including apps opened from
 Spotlight or the Dock. Every Ghostty window is routed to workspace 5, including
 windows opened outside an AeroSpace binding. System notification windows are
-exempt.
+exempt. macOS authentication prompts from SecurityAgent stay floating on the
+workspace that opened them.
 
 ### AeroSpace application shortcuts
 
