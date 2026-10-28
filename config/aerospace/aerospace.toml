@@ -88,6 +88,7 @@ on-window-detected = [
     { if = 'test %{app-bundle-id} = com.mitchellh.ghostty', run = 'move-node-to-workspace 5' },
     # Keep macOS authentication prompts on the workspace that requested them.
     { if = 'test %{app-bundle-id} = com.apple.SecurityAgent', run = 'layout floating' },
+    { if = 'test %{app-bundle-id} = com.apple.LocalAuthentication.UIAgent', run = 'layout floating' },
     # Do not move notification banners into a workspace.
     { if = 'test %{app-bundle-id} = com.apple.UserNotificationCenter', run = 'true' },
     { if = 'true', run = 'move-node-to-workspace 9' },
