@@ -79,6 +79,7 @@ on-window-detected = [
     { if = 'test %{app-bundle-id} = com.TablePro', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = com.usebruno.app', run = 'move-node-to-workspace 4' },
     { if = 'test %{app-bundle-id} = dev.zed.Zed', run = 'move-node-to-workspace 4' },
+    { if = 'test %{app-bundle-id} = so.yogurt.app', run = 'move-node-to-workspace 8' },
     # Keep remote-control sessions separate from local work. Windows App is
     # routed when present, but is intentionally not installed by this setup.
     { if = 'test %{app-bundle-id} = com.apple.ScreenSharing', run = 'move-node-to-workspace 7' },
